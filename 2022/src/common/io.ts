@@ -1,6 +1,6 @@
-import { readFile } from "node:fs/promises";
+import { readFileSync } from "fs";
 
 export function readDayInput(day: number): string {
   const dayString = day.toString().padStart(2, "0");
-  return readFile(`data/${dayString}.txt`, "utf8");
+  return readFileSync(`data/${dayString}.txt`, "utf8");
 }

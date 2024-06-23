@@ -7,9 +7,9 @@ enum Move {
 }
 
 enum Outcome {
-    Win,
-    Draw,
-    Loss,
+  Win,
+  Draw,
+  Loss,
 }
 
 const moveValue = {
@@ -30,10 +30,10 @@ function findWinningMove(opponent: Move) {
 }
 
 function findNecessaryMove(opponent: Move, outcome: Outcome) {
-    if (outcome === Outcome.Draw) return opponent;
-    if (outcome === Outcome.Win) return findWinningMove(opponent);
+  if (outcome === Outcome.Draw) return opponent;
+  if (outcome === Outcome.Win) return findWinningMove(opponent);
 
-    return findWinningMove(findWinningMove(opponent));
+  return findWinningMove(findWinningMove(opponent));
 }
 
 function codeToMoveWithUncertainty(code: string) {
@@ -62,35 +62,59 @@ function computeWinValue(round: Round) {
   }
 }
 
-function computeScore(round: Round) {
+function computeScore(round: RoundWithPlayer) {
   return moveValue[round.player] + computeWinValue(round);
 }
 
 type RoundWithPlayer = {
-    player: Move;
-    opponent: Move;
-    outcome?: never;
-  };
+  player: Move;
+  opponent: Move;
+  outcome?: never;
+};
 
-  type RoundWithOutcome = {
-    player?: never;
-    opponent: Move;
-    outcome: Outcome;
-  };
+type RoundWithOutcome = {
+  player?: never;
+  opponent: Move;
+  outcome: Outcome;
+};
 
-  type Round = RoundWithPlayer | RoundWithOutcome;
+type Round = RoundWithPlayer | RoundWithOutcome;
 
-const data = readDayInput(2)
+const partOneData = readDayInput(2)
   .split("\n")
   .map((line) => {
     const [opponentCode, playerCode] = line.split(" ");
     return {
       player: codeToMoveWithUncertainty(playerCode),
       opponent: codeToMoveWithUncertainty(opponentCode),
-    } as Round;
+    } as RoundWithPlayer;
   });
 
 console.log(
   "Part I: ",
-  data.map(computeScore).reduce((acc, score) => acc + score, 0),
+  partOneData.map(computeScore).reduce((acc, score) => acc + score, 0),
+);
+
+const partTwoData = readDayInput(2)
+  .split("\n")
+  .map((line) => {
+    const [opponentCode, outcome] = line.split(" ");
+    return {
+      opponent: codeToMoveWithUncertainty(opponentCode),
+      outcome:
+        outcome === "X"
+          ? Outcome.Loss
+          : outcome === "Y"
+            ? Outcome.Draw
+            : Outcome.Win,
+    } as RoundWithOutcome;
+  })
+  .map((round) => ({
+    player: findNecessaryMove(round.opponent, round.outcome),
+    opponent: round.opponent,
+  }));
+
+console.log(
+  "Part I: ",
+  partTwoData.map(computeScore).reduce((acc, score) => acc + score, 0),
 );

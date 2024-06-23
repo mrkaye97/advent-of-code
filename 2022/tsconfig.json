@@ -1,18 +1,23 @@
 {
   "compilerOptions": {
     "target": "ES6",
-    "module": "commonjs",
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "noEmit": true,
     "noImplicitAny": true,
     "forceConsistentCasingInFileNames": true,
-    "lib": ["es2017", "dom"],
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
     "types": ["node"],
-    "noResolve": false
+    "isolatedModules": true,
+    "incremental": true,
+    "noResolve": false,
+    "paths": {
+      "@/*": ["./*"]
+    }
   },
-  "include": ["**/*.ts", "2022/src/common/io.js"],
+  "include": ["**/*.ts"],
   "exclude": ["node_modules"],
   "ts-node": {
     "transpileOnly": true,

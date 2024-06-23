@@ -3,9 +3,6 @@
   "scripts": {
     "fmt": "npx prettier --write ."
   },
-  "dependencies": {
-    "fs": "^0.0.1-security"
-  },
   "devDependencies": {
     "@types/node": "^20.14.8",
     "ts-node": "^10.9.2",
