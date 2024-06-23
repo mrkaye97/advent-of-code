@@ -3,9 +3,6 @@ import { readDayInput } from "../common/io";
 const data = readDayInput(8)
   .split("\n")
   .map((line) => line.split("").map((char) => parseInt(char)));
-const dimensions = [data.length, data[0].length];
-
-const numOuterTrees = (dimensions[0] - 1) * 4;
 
 function range(start: number, stop: number) {
   return Array.from(
