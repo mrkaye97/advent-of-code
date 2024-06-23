@@ -1,0 +1,15 @@
+{
+  "name": "2022",
+  "scripts": {
+    "fmt": "npx prettier --write ."
+  },
+  "dependencies": {
+    "fs": "^0.0.1-security"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.8",
+    "ts-node": "^10.9.2",
+    "tslib": "^2.6.3",
+    "typescript": "^5.5.2"
+  }
+}
