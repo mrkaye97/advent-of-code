@@ -47,7 +47,11 @@ function isVisible(grid: number[][], row: number, col: number): boolean {
   );
 }
 
-function computeScenicScore(grid: number[][], row: number, col: number): number {
+function computeScenicScore(
+  grid: number[][],
+  row: number,
+  col: number,
+): number {
   if (
     row === 0 ||
     row === grid.length - 1 ||
@@ -63,7 +67,8 @@ function computeScenicScore(grid: number[][], row: number, col: number): number 
   const eastCandidates = range(col + 1, grid[0].length);
 
   const northBarrier =
-    northCandidates.find((cnd) => grid[row][col] <= grid[cnd][col]) || 0;
+    northCandidates.reverse().find((cnd) => grid[row][col] <= grid[cnd][col]) ||
+    0;
   const southBarrier =
     southCandidates.find((cnd) => grid[row][col] <= grid[cnd][col]) ||
     grid.length - 1;
@@ -71,7 +76,8 @@ function computeScenicScore(grid: number[][], row: number, col: number): number 
     eastCandidates.find((cnd) => grid[row][col] <= grid[row][cnd]) ||
     grid.length - 1;
   const westBarrier =
-    westCandidates.find((cnd) => grid[row][col] <= grid[row][cnd]) || 0;
+    westCandidates.reverse().find((cnd) => grid[row][col] <= grid[row][cnd]) ||
+    0;
 
   return (
     (row - northBarrier) *
