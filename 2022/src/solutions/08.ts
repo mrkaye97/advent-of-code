@@ -47,7 +47,7 @@ function isVisible(grid: number[][], row: number, col: number): boolean {
   );
 }
 
-function viewingDistance(grid: number[][], row: number, col: number): number {
+function computeScenicScore(grid: number[][], row: number, col: number): number {
   if (
     row === 0 ||
     row === grid.length - 1 ||
@@ -92,7 +92,7 @@ console.log(
   "Part II: ",
   Math.max(
     ...data.flatMap((r, row) =>
-      r.map((c, col) => viewingDistance(data, row, col)),
+      r.map((c, col) => computeScenicScore(data, row, col)),
     ),
   ),
 );
