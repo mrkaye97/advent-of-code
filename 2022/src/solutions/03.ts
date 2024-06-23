@@ -1,3 +1,4 @@
+import { unique } from "../common/array";
 import { readDayInput } from "../common/io";
 
 function computeItemPriority(item: string) {
@@ -25,7 +26,7 @@ function partitionRucksack(items: string[]) {
 
 function intersection<Type>(left: Type[], right: Type[]): Type[] {
   const intersect = left.filter((value) => right.includes(value));
-  return [...new Set(intersect)];
+  return unique(intersect);
 }
 
 const data = readDayInput(3)
