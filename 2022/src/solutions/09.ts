@@ -6,8 +6,7 @@ type Point = {
 };
 
 type Position = {
-  head: Point;
-  tail: Point;
+  knots: Point[];
   visited: Point[];
 };
 
@@ -49,57 +48,54 @@ function move(point: Point, direction: Direction) {
   }
 }
 
-function catchupTail(head: Point, tail: Point, directionMoved: Direction) {
+function catchupTail(head: Point, tail: Point) {
   if (isAdjacent(head, tail)) return tail;
 
-  switch (directionMoved) {
-    case Direction.UP:
-      if (head.col < tail.col) {
-        return move(move(tail, Direction.LEFT), Direction.UP);
-      } else if (head.col > tail.col) {
-        return move(move(tail, Direction.RIGHT), Direction.UP);
-      } else {
-        return move(tail, Direction.UP);
-      }
-    case Direction.DOWN:
-      if (head.col < tail.col) {
-        return move(move(tail, Direction.LEFT), Direction.DOWN);
-      } else if (head.col > tail.col) {
-        return move(move(tail, Direction.RIGHT), Direction.DOWN);
-      } else {
-        return move(tail, Direction.DOWN);
-      }
-    case Direction.LEFT:
-      if (head.row < tail.row) {
-        return move(move(tail, Direction.UP), Direction.LEFT);
-      } else if (head.row > tail.row) {
-        return move(move(tail, Direction.DOWN), Direction.LEFT);
-      } else {
-        return move(tail, Direction.LEFT);
-      }
-    case Direction.RIGHT:
-      if (head.row < tail.row) {
-        return move(move(tail, Direction.UP), Direction.RIGHT);
-      } else if (head.row > tail.row) {
-        return move(move(tail, Direction.DOWN), Direction.RIGHT);
-      } else {
-        return move(tail, Direction.RIGHT);
-      }
+  if (head.row === tail.row) {
+    return head.col < tail.col
+      ? move(tail, Direction.LEFT)
+      : move(tail, Direction.RIGHT);
+  } else if (head.col === tail.col) {
+    return head.row < tail.row
+      ? move(tail, Direction.UP)
+      : move(tail, Direction.DOWN);
+  } else if (head.row < tail.row && head.col < tail.col) {
+    return move(move(tail, Direction.UP), Direction.LEFT);
+  } else if (head.row < tail.row && head.col > tail.col) {
+    return move(move(tail, Direction.UP), Direction.RIGHT);
+  } else if (head.row > tail.row && head.col < tail.col) {
+    return move(move(tail, Direction.DOWN), Direction.LEFT);
+  } else if (head.row > tail.row && head.col > tail.col) {
+    return move(move(tail, Direction.DOWN), Direction.RIGHT);
+  } else {
+    throw new Error("Impossible case reached");
   }
 }
 
 function applyInstruction(position: Position, direction: Direction) {
-  const newHead = move(position.head, direction);
-  const newTail = catchupTail(newHead, position.tail, direction);
+  for (let i = 0; i < position.knots.length; i++) {
+    if (i === 0) {
+      position.knots[i] = move(position.knots[i], direction);
+    }
+
+    if (i < position.knots.length - 1) {
+      position.knots[i + 1] = catchupTail(
+        position.knots[i],
+        position.knots[i + 1],
+      );
+    }
+  }
+
   const newVisited = position.visited.find(
-    (point) => point.row === newTail.row && point.col === newTail.col,
+    (point) =>
+      point.row === position.knots[position.knots.length - 1].row &&
+      point.col === position.knots[position.knots.length - 1].col,
   )
     ? position.visited
-    : [...position.visited, newTail];
+    : [...position.visited, position.knots[position.knots.length - 1]];
 
   return {
-    head: newHead,
-    tail: newTail,
+    knots: position.knots,
     visited: newVisited,
   } as Position;
 }
@@ -117,8 +113,10 @@ const instructions = readDayInput(9)
   });
 
 const startingPosition = {
-  head: { row: 0, col: 0 },
-  tail: { row: 0, col: 0 },
+  knots: [
+    { row: 0, col: 0 },
+    { row: 0, col: 0 },
+  ],
   visited: [{ row: 0, col: 0 }],
 } as Position;
 
