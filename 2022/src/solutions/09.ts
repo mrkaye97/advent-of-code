@@ -127,5 +127,4 @@ function solve(n: number) {
 }
 
 console.log("Part I: ", solve(2));
-
-console.log("Part I: ", solve(10));
+console.log("Part II: ", solve(10));
