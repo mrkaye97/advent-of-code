@@ -112,18 +112,20 @@ const instructions = readDayInput(9)
       .map(() => direction);
   });
 
-const startingPosition = {
-  knots: [
-    { row: 0, col: 0 },
-    { row: 0, col: 0 },
-  ],
-  visited: [{ row: 0, col: 0 }],
-} as Position;
+function solve(n: number) {
+  const startingPosition = {
+    knots: Array(n)
+      .fill(0)
+      .map((_) => ({ row: 0, col: 0 })),
+    visited: [{ row: 0, col: 0 }],
+  } as Position;
 
-console.log(
-  "Part I: ",
-  instructions.reduce(
+  return instructions.reduce(
     (position, direction) => applyInstruction(position, direction),
     startingPosition,
-  ).visited.length,
-);
+  ).visited.length;
+}
+
+console.log("Part I: ", solve(2));
+
+console.log("Part I: ", solve(10));
