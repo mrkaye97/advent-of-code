@@ -9,13 +9,8 @@ type MonkeyBusiness = {
   processed: number;
 };
 
-function add(x: number, y: number) {
-  return x + y;
-}
-
-function multiply(x: number, y: number) {
-  return x * y;
-}
+const add = (x: number, y: number) => x + y;
+const multiply = (x: number, y: number) => x * y;
 
 function parseOperation(raw: string) {
   const operator = raw.includes(" * ") ? multiply : add;
@@ -92,44 +87,27 @@ function playGame(state: MonkeyBusiness[], shouldDivide: boolean) {
   return state;
 }
 
-// Part I
-const state = readDayInput(11)
-  .split("\n\n")
-  .map(parseInput)
-  .filter(Boolean) as MonkeyBusiness[];
+[
+  { part: "1", n: 20, shouldDivide: true },
+  { part: "2", n: 10_000, shouldDivide: false },
+].forEach((obj) => {
+  const state = readDayInput(11)
+    .split("\n\n")
+    .map(parseInput)
+    .filter(Boolean) as MonkeyBusiness[];
 
-Array(20)
-  .fill(0)
-  .forEach((_) => {
-    playGame(state, true);
-  });
+  Array(obj.n)
+    .fill(0)
+    .forEach((_) => {
+      playGame(state, obj.shouldDivide);
+    });
 
-console.log(
-  "Part I: ",
-  state
-    .map((monkey) => monkey.processed)
-    .sort((a, b) => b - a)
-    .slice(0, 2)
-    .reduce((acc, val) => acc * val, 1),
-);
-
-// Part II
-const statePartII = readDayInput(11)
-  .split("\n\n")
-  .map(parseInput)
-  .filter(Boolean) as MonkeyBusiness[];
-
-Array(10_000)
-  .fill(0)
-  .forEach((_) => {
-    playGame(statePartII, false);
-  });
-
-console.log(
-  "Part II: ",
-  statePartII
-    .map((monkey) => monkey.processed)
-    .sort((a, b) => b - a)
-    .slice(0, 2)
-    .reduce((acc, val) => acc * val, 1),
-);
+  console.log(
+    `Part ${obj.part}: `,
+    state
+      .map((monkey) => monkey.processed)
+      .sort((a, b) => b - a)
+      .slice(0, 2)
+      .reduce((acc, val) => acc * val, 1),
+  );
+});
