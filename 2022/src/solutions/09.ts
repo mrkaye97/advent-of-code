@@ -50,9 +50,7 @@ function move(point: Point, direction: Direction) {
 }
 
 function catchupTail(head: Point, tail: Point, directionMoved: Direction) {
-  const adjacent = isAdjacent(head, tail);
-
-  if (adjacent) return tail;
+  if (isAdjacent(head, tail)) return tail;
 
   switch (directionMoved) {
     case Direction.UP:
