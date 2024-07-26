@@ -20,3 +20,8 @@ export function equal<T>(a: T[], b: T[]): boolean {
 
   return a.every((value, index) => value === b[index]);
 }
+
+export function range(start: number, end: number) {
+  const size = end - start + 1;
+  return [...Array(size).keys()].map((i) => i + start);
+}
