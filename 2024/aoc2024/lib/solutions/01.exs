@@ -3,39 +3,36 @@ defmodule Day1 do
     "data/01.txt"
     |> File.read!()
     |> String.split(~r{\n}, trim: true)
-    |> Enum.map(&String.to_integer/1)
+    |> Enum.map(fn x ->
+      String.split(x, ~r/\s+/)
+      |> Enum.map(fn x -> String.to_integer(x) end)
+    end)
+    |> transpose()
+  end
+
+  def transpose(rows) do
+    rows
+    |> List.zip()
+    |> Enum.map(&Tuple.to_list/1)
   end
 
   def part1(input) do
     input
-    |> Enum.with_index()
-    |> Enum.map(fn {value, index} ->
-      index > 0 and Enum.at(input, index - 1) < value
-    end)
-    |> Enum.count(& &1)
-    |> IO.inspect()
+    |> Enum.map(&Enum.sort/1)
+    |> Enum.zip()
+    |> Enum.map(fn {a, b} -> abs(a - b) end)
+    |> Enum.sum()
+    |> IO.puts()
   end
 
   def part2(input) do
-    summed =
-      input
-      |> Enum.with_index()
-      |> Enum.map(fn {value, index} ->
-        if index < 2 do
-          -999
-        else
-          Enum.at(input, index - 2) + Enum.at(input, index - 1) + value
-        end
-      end)
-      |> Enum.filter(&(&1 != -999))
+    first = Enum.at(input, 0)
+    second = input |> Enum.at(1) |> Enum.frequencies()
 
-    summed
-    |> Enum.with_index()
-    |> Enum.map(fn {value, index} ->
-      index > 0 and value > Enum.at(summed, index - 1)
-    end)
-    |> Enum.count(& &1)
-    |> IO.inspect()
+    first
+    |> Enum.map(fn x -> x * Map.get(second, x, 0) end)
+    |> Enum.sum()
+    |> IO.puts()
   end
 
   def main do
