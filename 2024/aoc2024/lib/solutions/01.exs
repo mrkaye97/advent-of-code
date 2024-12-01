@@ -5,7 +5,7 @@ defmodule Day1 do
     |> String.split(~r{\n}, trim: true)
     |> Enum.map(fn x ->
       String.split(x, ~r/\s+/)
-      |> Enum.map(fn x -> String.to_integer(x) end)
+      |> Enum.map(&String.to_integer/1)
     end)
     |> transpose()
   end
@@ -23,7 +23,6 @@ defmodule Day1 do
       0,
       fn [a, b], acc -> acc + abs(a - b) end
     )
-    |> IO.puts()
   end
 
   def part2(input) do
@@ -32,14 +31,13 @@ defmodule Day1 do
 
     first
     |> Enum.reduce(0, fn x, acc -> acc + x * Map.get(second, x, 0) end)
-    |> IO.puts()
   end
 
   def main do
     data = read()
 
-    part1(data)
-    part2(data)
+    IO.puts(part1(data))
+    IO.puts(part2(data))
   end
 end
 
