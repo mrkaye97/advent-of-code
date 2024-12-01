@@ -16,7 +16,7 @@ defmodule Day1 do
     |> Enum.map(&Tuple.to_list/1)
   end
 
-  def part1(input) do
+  def part_1(input) do
     input
     |> Enum.map(&Enum.sort/1)
     |> Enum.zip_reduce(
@@ -25,7 +25,7 @@ defmodule Day1 do
     )
   end
 
-  def part2(input) do
+  def part_2(input) do
     first = Enum.at(input, 0)
     second = input |> Enum.at(1) |> Enum.frequencies()
 
