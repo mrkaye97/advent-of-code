@@ -26,11 +26,11 @@ defmodule Day1 do
   end
 
   def part_2(input) do
-    first = Enum.at(input, 0)
-    second = input |> Enum.at(1) |> Enum.frequencies()
+    frequencies = input |> Enum.at(1) |> Enum.frequencies()
 
-    first
-    |> Enum.reduce(0, fn x, acc -> acc + x * Map.get(second, x, 0) end)
+    input
+    |> Enum.at(0)
+    |> Enum.reduce(0, fn x, acc -> acc + x * Map.get(frequencies, x, 0) end)
   end
 
   def main do
