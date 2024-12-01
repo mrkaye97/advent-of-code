@@ -19,9 +19,10 @@ defmodule Day1 do
   def part1(input) do
     input
     |> Enum.map(&Enum.sort/1)
-    |> Enum.zip()
-    |> Enum.map(fn {a, b} -> abs(a - b) end)
-    |> Enum.sum()
+    |> Enum.zip_reduce(
+      0,
+      fn [a, b], acc -> acc + abs(a - b) end
+    )
     |> IO.puts()
   end
 
@@ -30,8 +31,7 @@ defmodule Day1 do
     second = input |> Enum.at(1) |> Enum.frequencies()
 
     first
-    |> Enum.map(fn x -> x * Map.get(second, x, 0) end)
-    |> Enum.sum()
+    |> Enum.reduce(0, fn x, acc -> acc + x * Map.get(second, x, 0) end)
     |> IO.puts()
   end
 
