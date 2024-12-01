@@ -36,8 +36,8 @@ defmodule Day1 do
   def main do
     data = read()
 
-    IO.puts(part1(data))
-    IO.puts(part2(data))
+    IO.puts(part_1(data))
+    IO.puts(part_2(data))
   end
 end
 
