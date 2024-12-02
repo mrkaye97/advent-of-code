@@ -65,8 +65,8 @@ defmodule Solution do
   def main do
     data = read()
 
-    IO.puts(compute_num_valid_lines(data, 0))
-    IO.puts(compute_num_valid_lines(data, 1))
+    IO.puts("Part I: " <> Integer.to_string(compute_num_valid_lines(data, 0)))
+    IO.puts("Part II: " <> Integer.to_string(compute_num_valid_lines(data, 1)))
   end
 end
 
