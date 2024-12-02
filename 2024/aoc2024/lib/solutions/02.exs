@@ -38,11 +38,13 @@ defmodule Solution do
 
         is_failure = not (trend_continuing and is_safe)
 
-        if is_failure and num_failures < num_failures_allowed do
-          {num_failures + if(is_failure, do: 1, else: 0), previous, trend}
-        else
-          {num_failures + if(is_failure, do: 1, else: 0), current, trend || current_trend}
-        end
+        next_num_failures = num_failures + if(is_failure, do: 1, else: 0)
+        next_trend = trend || current_trend
+
+        next_value =
+          if is_failure and num_failures < num_failures_allowed, do: previous, else: current
+
+        {next_num_failures, next_value, next_trend}
       end)
 
     failures
