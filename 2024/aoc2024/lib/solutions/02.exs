@@ -27,8 +27,9 @@ defmodule Solution do
     end
   end
 
-  def is_valid(line) do
-    result =
+  def part_1(input) do
+    input
+    |> Enum.map(fn line ->
       line
       |> Enum.reduce({0, nil, nil}, fn current, {num_failures, previous, trend} ->
         current_trend = determine_trend(current, previous)
@@ -38,50 +39,47 @@ defmodule Solution do
 
         is_failure = not (trend_continuing and is_safe)
 
-        {num_failures + if(is_failure, do: 1, else: 0), current, current_trend}
+        {num_failures + if(is_failure, do: 1, else: 0), current, trend || current_trend}
       end)
-
-    if elem(result, 0) == 0 do
-      1
-    else
-      0
-    end
-  end
-
-  def remove_each_element(list) do
-    list
-    |> Enum.with_index()
-    |> Enum.map(fn {_, index} ->
-      list
-      |> Enum.with_index()
-      |> Enum.reject(fn {_value, i} -> i == index end)
-      |> Enum.map(&elem(&1, 0))
     end)
+    |> Enum.map(fn {num_failures, _, _} -> num_failures end)
+    |> Enum.reduce(0, fn x, num_failures -> num_failures + if(x == 0, do: 1, else: 0) end)
   end
 
-  def part_1(input) do
-    input
-    |> Enum.map(&is_valid/1)
-    |> Enum.sum()
-    |> IO.inspect()
+  def part_2_valid(line) do
+    line
+    |> Enum.reduce({0, nil, nil}, fn current, {num_failures, previous, trend} ->
+      current_trend = determine_trend(current, previous)
+
+      is_safe = check_is_safe(current, previous)
+      trend_continuing = trend == nil or current_trend == trend
+
+      is_failure = not (trend_continuing and is_safe)
+
+      if is_failure and num_failures == 0 do
+        {1, previous, trend}
+      else
+        {num_failures + if(is_failure, do: 1, else: 0), current, trend || current_trend}
+      end
+    end)
   end
 
   def part_2(input) do
     input
-    |> Enum.map(&remove_each_element/1)
-    |> Enum.map(fn x ->
-      x |> Enum.map(fn y -> is_valid(y) end) |> Enum.any?(fn x -> x == 1 end)
+    |> Enum.map(fn line ->
+      {ffail, _, _} = part_2_valid(line)
+      {bfail, _, _} = part_2_valid(Enum.reverse(line))
+
+      min(ffail, bfail)
     end)
-    |> Enum.map(fn x -> if x, do: 1, else: 0 end)
-    |> Enum.sum()
-    |> IO.inspect()
+    |> Enum.reduce(0, fn x, num_failures -> num_failures + if(x <= 1, do: 1, else: 0) end)
   end
 
   def main do
     data = read()
 
-    part_1(data)
-    part_2(data)
+    IO.puts(part_1(data))
+    IO.puts(part_2(data))
   end
 end
 
