@@ -3,6 +3,19 @@ defmodule Mix.Tasks.Solution.New do
 
   @shortdoc "Generates a new solution template"
 
+  def safe_file_write(path, content) do
+    case File.write(path, content, [:exclusive]) do
+      :ok ->
+        IO.puts("File created and content written successfully.")
+
+      {:error, :eexist} ->
+        IO.puts("File already exists. Aborting operation.")
+
+      {:error, reason} ->
+        IO.puts("Failed to write to the file. Reason: #{inspect(reason)}")
+    end
+  end
+
   def run(args) do
     {opts, _, _} = OptionParser.parse(args, switches: [year: :string, day: :string])
     year = opts[:year] || to_string(Date.utc_today().year)
@@ -17,10 +30,10 @@ defmodule Mix.Tasks.Solution.New do
 
     content = """
     defmodule Solution do
-      def read do
-        "data/#{year}/#{day}.txt"
-        |> File.read!()
-        |> String.split(~r{\\n}, trim: true)
+      import Common.Input
+
+      def parse_input(input) do
+        input
       end
 
       def part_1(input) do
@@ -32,10 +45,12 @@ defmodule Mix.Tasks.Solution.New do
       end
 
       def main do
-        data = read()
+        data = read_input(#{year}, #{day}) |> parse_input()
 
-        IO.puts("Part I: " <> part_1(data))
-        IO.puts("Part II: " <> part_2(data))
+        IO.inspect(data)
+
+        # IO.puts("Part I: " <> part_1(data))
+        # IO.puts("Part II: " <> part_2(data))
       end
     end
 
@@ -43,12 +58,12 @@ defmodule Mix.Tasks.Solution.New do
     """
 
     File.mkdir_p!("lib/solutions/#{year}")
-    File.write!(solution_path, content)
+    safe_file_write(solution_path, content)
     Mix.shell().info("Created solution file at #{solution_path}")
 
     data_path = "data/#{year}/#{day}.txt"
     File.mkdir_p!("data/#{year}")
     Mix.shell().info("Created data file at #{data_path}")
-    File.write!(data_path, "")
+    safe_file_write(data_path, "")
   end
 end
