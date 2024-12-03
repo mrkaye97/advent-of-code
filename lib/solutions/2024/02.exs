@@ -1,10 +1,10 @@
 defmodule Solution do
+  import Common.Input
+
   @max_numeric_diff_allowed 3
 
   defp read do
-    "data/2024/02.txt"
-    |> File.read!()
-    |> String.split(~r{\n}, trim: true)
+    read_input(2024, 2)
     |> Enum.map(fn x ->
       x
       |> String.split(~r/\s+/)

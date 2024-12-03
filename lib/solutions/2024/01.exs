@@ -1,19 +1,14 @@
 defmodule Solution do
+  import Common.Enum
+  import Common.Input
+
   def read do
-    "data/2024/01.txt"
-    |> File.read!()
-    |> String.split(~r{\n}, trim: true)
+    read_input(2024, 1)
     |> Enum.map(fn x ->
       String.split(x, ~r/\s+/)
       |> Enum.map(&String.to_integer/1)
     end)
     |> transpose()
-  end
-
-  def transpose(rows) do
-    rows
-    |> List.zip()
-    |> Enum.map(&Tuple.to_list/1)
   end
 
   def part_1(input) do
