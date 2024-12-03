@@ -6,10 +6,15 @@ defmodule Mix.Tasks.Solution.New do
   def run(args) do
     {opts, _, _} = OptionParser.parse(args, switches: [year: :string, day: :string])
     year = opts[:year] || to_string(Date.utc_today().year)
-    day = opts[:day] || to_string(Date.utc_today().day |> Integer.to_string() |> String.pad_leading(2, "0"))
+
+    day =
+      opts[:day] ||
+        to_string(Date.utc_today().day |> Integer.to_string() |> String.pad_leading(2, "0"))
+
     day = String.pad_leading(day, 2, "0")
 
     solution_path = "lib/solutions/#{year}/#{day}.exs"
+
     content = """
     defmodule Solution do
       def read do

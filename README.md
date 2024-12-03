@@ -5,17 +5,17 @@ Solving problems in Elixir! (to the extent that I can)
 ## Running a solution:
 
 ```
-mix run lib/solutions/{{ year }}/{{ day }}.exs
+make run YEAR={{ year }} DAY={{ day }}
 ```
 
 ## Scaffold a new solution
 
 ```
-mix solution.new --year {{ year }} --day {{ day }}
+make new YEAR={{ year }} DAY={{ day }}
 ```
 
 ## Format
 
 ```
-mix format
+make fmt
 ```
