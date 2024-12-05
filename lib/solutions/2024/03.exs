@@ -1,4 +1,6 @@
 defmodule Solution do
+  import Common.Output
+
   def extract_valid_mul_statements(input) do
     regex = ~r/mul\(\d{1,3},\d{1,3}\)/
 
@@ -34,21 +36,19 @@ defmodule Solution do
   def part_1(input) do
     input
     |> aggregate_muls_in_string()
-    |> Integer.to_string()
   end
 
   def part_2(input) do
     input
     |> extract_enabled_substrings()
     |> aggregate_muls_in_string()
-    |> Integer.to_string()
   end
 
   def main do
     input = File.read!("data/2024/03.txt")
 
-    IO.puts("Part I: " <> part_1(input))
-    IO.puts("Part II: " <> part_2(input))
+    pretty_print(1, &part_1/1, input)
+    pretty_print(2, &part_2/1, input)
   end
 end
 

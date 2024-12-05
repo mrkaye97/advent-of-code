@@ -48,7 +48,6 @@ defmodule Solution do
     end)
     |> Enum.map(fn {game_id, _} -> game_id end)
     |> Enum.sum()
-    |> Integer.to_string()
   end
 
   def part_2(input) do
@@ -64,7 +63,6 @@ defmodule Solution do
       |> Enum.product()
     end)
     |> Enum.sum()
-    |> Integer.to_string()
   end
 
   def main do

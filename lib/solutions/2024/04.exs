@@ -1,5 +1,6 @@
 defmodule Solution do
   import Common.Input
+  import Common.Output
 
   @xmas "XMAS"
 
@@ -168,15 +169,17 @@ defmodule Solution do
     input
     |> Enum.with_index()
     |> Enum.map(fn {row, row_index} ->
-      row
-      |> Enum.with_index()
-      |> Enum.map(fn {_, col_index} ->
-        extract_xmas_occurrences(input, row_index, col_index)
+      Task.async(fn ->
+        row
+        |> Enum.with_index()
+        |> Enum.map(fn {_, col_index} ->
+          extract_xmas_occurrences(input, row_index, col_index)
+        end)
+        |> Enum.sum()
       end)
-      |> Enum.sum()
     end)
+    |> Enum.map(&Task.await/1)
     |> Enum.sum()
-    |> Integer.to_string()
   end
 
   def part_2(input) do
@@ -191,7 +194,6 @@ defmodule Solution do
       |> Enum.sum()
     end)
     |> Enum.sum()
-    |> Integer.to_string()
   end
 
   def main do
@@ -199,8 +201,8 @@ defmodule Solution do
       read_input(2024, 04)
       |> parse_input()
 
-    IO.puts("Part I: " <> part_1(data))
-    IO.puts("Part II: " <> part_2(data))
+    pretty_print(1, &part_1/1, data)
+    pretty_print(2, &part_2/1, data)
   end
 end
 

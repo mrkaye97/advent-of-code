@@ -1,6 +1,7 @@
 defmodule Solution do
   import Common.Enum
   import Common.Input
+  import Common.Output
 
   def read do
     read_input(2024, 1)
@@ -31,8 +32,8 @@ defmodule Solution do
   def main do
     data = read()
 
-    IO.puts(part_1(data))
-    IO.puts(part_2(data))
+    pretty_print(1, &part_1/1, data)
+    pretty_print(2, &part_2/1, data)
   end
 end
 

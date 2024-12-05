@@ -1,5 +1,6 @@
 defmodule Solution do
   import Common.Input
+  import Common.Output
 
   def parse_input(input) do
     rules =
@@ -25,7 +26,6 @@ defmodule Solution do
 
       if sorted == x, do: acc + Enum.at(x, div(length(x), 2)), else: acc
     end)
-    |> Integer.to_string()
   end
 
   def part_2(input) do
@@ -35,7 +35,6 @@ defmodule Solution do
 
       if sorted != x, do: acc + Enum.at(sorted, div(length(sorted), 2)), else: acc
     end)
-    |> Integer.to_string()
   end
 
   def sorter(rules, l, r) do
@@ -56,8 +55,8 @@ defmodule Solution do
   def main do
     data = read_input(2024, 05) |> parse_input()
 
-    IO.puts("Part I: " <> part_1(data))
-    IO.puts("Part II: " <> part_2(data))
+    pretty_print(1, &part_1/1, data)
+    pretty_print(2, &part_2/1, data)
   end
 end
 

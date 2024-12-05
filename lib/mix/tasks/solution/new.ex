@@ -31,6 +31,7 @@ defmodule Mix.Tasks.Solution.New do
     content = """
     defmodule Solution do
       import Common.Input
+      import Common.Output
 
       def parse_input(input) do
         input
@@ -49,8 +50,8 @@ defmodule Mix.Tasks.Solution.New do
 
         IO.inspect(data)
 
-        # IO.puts("Part I: " <> part_1(data))
-        # IO.puts("Part II: " <> part_2(data))
+        # pretty_print(1, &part_1/1, data)
+        # pretty_print(2, &part_2/1, data)
       end
     end
 

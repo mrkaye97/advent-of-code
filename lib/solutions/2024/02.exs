@@ -1,5 +1,6 @@
 defmodule Solution do
   import Common.Input
+  import Common.Output
 
   @max_numeric_diff_allowed 3
 
@@ -65,8 +66,8 @@ defmodule Solution do
   def main do
     data = read()
 
-    IO.puts("Part I: " <> Integer.to_string(compute_num_valid_lines(data, 0)))
-    IO.puts("Part II: " <> Integer.to_string(compute_num_valid_lines(data, 1)))
+    pretty_print(1, fn input -> compute_num_valid_lines(input, 0) end, data)
+    pretty_print(1, fn input -> compute_num_valid_lines(input, 1) end, data)
   end
 end
 
