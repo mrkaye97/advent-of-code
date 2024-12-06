@@ -1,10 +1,11 @@
 defmodule Solution do
   import Common.Input
   import Common.Output
+  import Common.Enum
 
   @guard_symbols [">", "<", "^", "v"]
 
-  def parse_input(input) do
+  defp parse_input(input) do
     grid =
       input
       |> Enum.map(fn line ->
@@ -27,7 +28,7 @@ defmodule Solution do
     }
   end
 
-  def rotate(current_direction) do
+  defp rotate(current_direction) do
     case current_direction do
       ">" -> "v"
       "^" -> ">"
@@ -36,20 +37,16 @@ defmodule Solution do
     end
   end
 
-  def get_value({row, col}, grid) do
-    grid |> Enum.at(row, []) |> Enum.at(col)
-  end
-
-  def propose_move({row, col}, grid) do
+  defp propose_move({row, col}, grid) do
     {r, c, is_escaped} =
-      case get_value({row, col}, grid) do
+      case get_value_from_2_by_2_matrix({row, col}, grid) do
         ">" -> {row, col + 1, col == length(grid) - 1}
         "<" -> {row, col - 1, col == 0}
         "^" -> {row - 1, col, row == 0}
         "v" -> {row + 1, col, row == length(grid) - 1}
       end
 
-    {r, c, get_value({r, c}, grid), is_escaped}
+    {r, c, get_value_from_2_by_2_matrix({r, c}, grid), is_escaped}
   end
 
   defp replace_item(grid, r, c, value) do
@@ -67,7 +64,7 @@ defmodule Solution do
   end
 
   defp process_move({row, col}, grid, visited) do
-    current_value = get_value({row, col}, grid)
+    current_value = get_value_from_2_by_2_matrix({row, col}, grid)
 
     {proposed_row, proposed_col, proposed_value, is_escaped} = propose_move({row, col}, grid)
 
@@ -97,7 +94,7 @@ defmodule Solution do
     end
   end
 
-  def part_1(input) do
+  defp part_1(input) do
     starting_position = input[:guard_starting_position]
     grid = input[:grid]
     visited = MapSet.new([starting_position])
@@ -123,7 +120,7 @@ defmodule Solution do
     )
   end
 
-  def part_2(input) do
+  defp part_2(input) do
     input
   end
 

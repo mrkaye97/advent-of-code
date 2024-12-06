@@ -33,12 +33,12 @@ defmodule Solution do
     |> Enum.join("")
   end
 
-  def part_1(input) do
+  defp part_1(input) do
     input
     |> aggregate_muls_in_string()
   end
 
-  def part_2(input) do
+  defp part_2(input) do
     input
     |> extract_enabled_substrings()
     |> aggregate_muls_in_string()

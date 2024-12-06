@@ -12,7 +12,7 @@ defmodule Solution do
     |> transpose()
   end
 
-  def part_1(input) do
+  defp part_1(input) do
     input
     |> Enum.map(&Enum.sort/1)
     |> Enum.zip_reduce(
@@ -21,7 +21,7 @@ defmodule Solution do
     )
   end
 
-  def part_2(input) do
+  defp part_2(input) do
     frequencies = input |> Enum.at(1) |> Enum.frequencies()
 
     input

@@ -7,7 +7,7 @@ defmodule Solution do
     "blue" => 14
   }
 
-  def parse_input(input) do
+  defp parse_input(input) do
     input
     |> Enum.map(fn line ->
       [game, data] = String.split(line, ": ")
@@ -33,7 +33,7 @@ defmodule Solution do
     end)
   end
 
-  def part_1(input) do
+  defp part_1(input) do
     input
     |> Enum.filter(fn {_, draws} ->
       draws
@@ -50,7 +50,7 @@ defmodule Solution do
     |> Enum.sum()
   end
 
-  def part_2(input) do
+  defp part_2(input) do
     input
     |> Enum.map(fn {_, rounds} ->
       rounds

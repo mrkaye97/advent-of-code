@@ -4,7 +4,7 @@ defmodule Solution do
 
   @xmas "XMAS"
 
-  def parse_input(input) do
+  defp parse_input(input) do
     input
     |> Enum.map(&String.graphemes/1)
   end
@@ -165,7 +165,7 @@ defmodule Solution do
     if(center and right and left, do: 1, else: 0)
   end
 
-  def part_1(input) do
+  defp part_1(input) do
     input
     |> Enum.with_index()
     |> Enum.map(fn {row, row_index} ->
@@ -182,7 +182,7 @@ defmodule Solution do
     |> Enum.sum()
   end
 
-  def part_2(input) do
+  defp part_2(input) do
     input
     |> Enum.with_index()
     |> Enum.map(fn {row, row_index} ->

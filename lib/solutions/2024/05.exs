@@ -2,7 +2,7 @@ defmodule Solution do
   import Common.Input
   import Common.Output
 
-  def parse_input(input) do
+  defp parse_input(input) do
     rules =
       input
       |> Enum.filter(fn x -> String.contains?(x, "|") end)
@@ -19,7 +19,7 @@ defmodule Solution do
     }
   end
 
-  def part_1(input) do
+  defp part_1(input) do
     input[:orders]
     |> Enum.reduce(0, fn x, acc ->
       sorted = Enum.sort(x, &sorter(input[:rules], &1, &2))
@@ -28,7 +28,7 @@ defmodule Solution do
     end)
   end
 
-  def part_2(input) do
+  defp part_2(input) do
     input[:orders]
     |> Enum.reduce(0, fn x, acc ->
       sorted = Enum.sort(x, &sorter(input[:rules], &1, &2))

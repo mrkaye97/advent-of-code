@@ -33,15 +33,15 @@ defmodule Mix.Tasks.Solution.New do
       import Common.Input
       import Common.Output
 
-      def parse_input(input) do
+      defp parse_input(input) do
         input
       end
 
-      def part_1(input) do
+      defp part_1(input) do
         input
       end
 
-      def part_2(input) do
+      defp part_2(input) do
         input
       end
 
