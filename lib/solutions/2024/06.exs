@@ -133,37 +133,41 @@ defmodule Solution do
       |> Enum.filter(fn p -> p != starting_position end)
 
     candidates
-    |> Enum.filter(fn {row, col} ->
-      grid = replace_item(input[:grid], row, col, "#")
+    |> Enum.map(fn {row, col} ->
+      Task.async(fn ->
+        grid = replace_item(input[:grid], row, col, "#")
 
-      visited =
-        MapSet.new([{l, r, get_value_from_2_by_2_matrix(starting_position, grid)}])
+        visited =
+          MapSet.new([{l, r, get_value_from_2_by_2_matrix(starting_position, grid)}])
 
-      Enum.reduce_while(
-        1..10000,
-        {starting_position, grid, visited},
-        fn _, {position, grid, visited} ->
-          {
-            row,
-            col,
-            new_grid,
-            is_escaped,
-            new_visited,
-            is_cycle
-          } = process_move(position, grid, visited, input[:dimension])
+        Enum.reduce_while(
+          1..15000,
+          {starting_position, grid, visited},
+          fn _, {position, grid, visited} ->
+            {
+              row,
+              col,
+              new_grid,
+              is_escaped,
+              new_visited,
+              is_cycle
+            } = process_move(position, grid, visited, input[:dimension])
 
-          if is_escaped or is_cycle do
-            if is_escaped do
-              {:halt, false}
+            if is_escaped or is_cycle do
+              if is_escaped do
+                {:halt, false}
+              else
+                {:halt, true}
+              end
             else
-              {:halt, true}
+              {:cont, {{row, col}, new_grid, new_visited}}
             end
-          else
-            {:cont, {{row, col}, new_grid, new_visited}}
           end
-        end
-      )
+        )
+      end)
     end)
+    |> Enum.map(&Task.await/1)
+    |> Enum.filter(& &1)
     |> Enum.uniq()
     |> Enum.count()
   end
