@@ -144,7 +144,12 @@ defmodule Solution do
       |> Enum.filter(fn p -> p != starting_position end)
 
     candidates
-    |> Enum.filter(fn {row, col} ->
+    |> Enum.with_index()
+    |> Enum.filter(fn {{row, col}, index} ->
+      IO.puts(
+        "Progressing... #{index} / #{length(candidates)} #{round(100 * (index + 1) / length(candidates))}%"
+      )
+
       grid = replace_item(input[:grid], row, col, "#")
 
       visited =
@@ -159,7 +164,7 @@ defmodule Solution do
             col,
             new_grid,
             is_escaped,
-            visited,
+            new_visited,
             is_cycle
           } = process_move(position, grid, visited)
 
@@ -170,7 +175,7 @@ defmodule Solution do
               {:halt, true}
             end
           else
-            {:cont, {{row, col}, new_grid, visited}}
+            {:cont, {{row, col}, new_grid, new_visited}}
           end
         end
       )
