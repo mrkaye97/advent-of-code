@@ -66,8 +66,8 @@ defmodule Solution do
   def main do
     data = read()
 
-    pretty_print(1, fn input -> compute_num_valid_lines(input, 0) end, data)
-    pretty_print(1, fn input -> compute_num_valid_lines(input, 1) end, data)
+    run_solution(1, fn input -> compute_num_valid_lines(input, 0) end, data)
+    run_solution(1, fn input -> compute_num_valid_lines(input, 1) end, data)
   end
 end
 

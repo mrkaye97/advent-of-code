@@ -50,8 +50,8 @@ defmodule Mix.Tasks.Solution.New do
 
         IO.inspect(data)
 
-        # pretty_print(1, &part_1/1, data)
-        # pretty_print(2, &part_2/1, data)
+        # run_solution(1, &part_1/1, data)
+        # run_solution(2, &part_2/1, data)
       end
     end
 

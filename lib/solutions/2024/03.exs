@@ -47,8 +47,8 @@ defmodule Solution do
   def main do
     input = File.read!("data/2024/03.txt")
 
-    pretty_print(1, &part_1/1, input)
-    pretty_print(2, &part_2/1, input)
+    run_solution(1, &part_1/1, input)
+    run_solution(2, &part_2/1, input)
   end
 end
 

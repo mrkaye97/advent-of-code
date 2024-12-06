@@ -55,8 +55,8 @@ defmodule Solution do
   def main do
     data = read_input(2024, 05) |> parse_input()
 
-    pretty_print(1, &part_1/1, data)
-    pretty_print(2, &part_2/1, data)
+    run_solution(1, &part_1/1, data)
+    run_solution(2, &part_2/1, data)
   end
 end
 

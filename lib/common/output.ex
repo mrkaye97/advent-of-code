@@ -5,8 +5,8 @@ defmodule Common.Output do
     {time_us / 1_000, result}
   end
 
-  @spec pretty_print(String.t(), (any() -> integer()), any()) :: :ok
-  def pretty_print(part, func, data) do
+  @spec run_solution(String.t(), (any() -> integer()), any()) :: :ok
+  def run_solution(part, func, data) do
     part_str = if part == 1, do: "Part I", else: "Part II"
     {runtime_ms, result} = measure(fn -> func.(data) end)
 
