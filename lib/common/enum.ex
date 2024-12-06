@@ -6,6 +6,6 @@ defmodule Common.Enum do
   end
 
   def get_value_from_2_by_2_matrix({row, col}, matrix) do
-    matrix |> Enum.at(row, []) |> Enum.at(col)
+    matrix[{row, col}]
   end
 end

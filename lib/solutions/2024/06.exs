@@ -4,69 +4,58 @@ defmodule Solution do
   import Common.Enum
 
   @guard_symbols [">", "<", "^", "v"]
+  @rotation_map %{"^" => ">", ">" => "v", "v" => "<", "<" => "^"}
 
   defp parse_input(input) do
-    grid =
+    raw =
       input
       |> Enum.map(fn line ->
         line |> String.split("") |> Enum.filter(fn cell -> cell != "" end)
       end)
 
+    grid =
+      raw
+      |> Enum.with_index()
+      |> Enum.reduce(%{}, fn {row, row_index}, acc ->
+        row
+        |> Enum.with_index()
+        |> Enum.reduce(acc, fn {cell, col_index}, inner_acc ->
+          Map.put(inner_acc, {row_index, col_index}, cell)
+        end)
+      end)
+
     guard_starting_position =
       grid
-      |> Enum.with_index()
-      |> Enum.reduce(nil, fn {row, row_index}, acc ->
-        case Enum.find_index(row, fn cell -> Enum.member?(@guard_symbols, cell) end) do
-          nil -> acc
-          col_index -> {row_index, col_index}
-        end
-      end)
+      |> Enum.find(fn {_key, val} -> Enum.member?(@guard_symbols, val) end)
+      |> elem(0)
 
     %{
       grid: grid,
-      guard_starting_position: guard_starting_position
+      guard_starting_position: guard_starting_position,
+      dimension: length(raw)
     }
   end
 
-  defp rotate(current_direction) do
-    case current_direction do
-      ">" -> "v"
-      "^" -> ">"
-      "<" -> "^"
-      "v" -> "<"
+  defp propose_move({row, col}, grid, dimension) do
+    current_value = Map.get(grid, {row, col}, ".")
+
+    case current_value do
+      ">" -> {row, col + 1, Map.get(grid, {row, col + 1}, "."), col == dimension - 1}
+      "<" -> {row, col - 1, Map.get(grid, {row, col - 1}, "."), col == 0}
+      "^" -> {row - 1, col, Map.get(grid, {row - 1, col}, "."), row == 0}
+      "v" -> {row + 1, col, Map.get(grid, {row + 1, col}, "."), row == dimension - 1}
     end
   end
 
-  defp propose_move({row, col}, grid) do
-    {r, c, is_escaped} =
-      case get_value_from_2_by_2_matrix({row, col}, grid) do
-        ">" -> {row, col + 1, col == length(grid) - 1}
-        "<" -> {row, col - 1, col == 0}
-        "^" -> {row - 1, col, row == 0}
-        "v" -> {row + 1, col, row == length(grid) - 1}
-      end
-
-    {r, c, get_value_from_2_by_2_matrix({r, c}, grid), is_escaped}
-  end
-
   defp replace_item(grid, r, c, value) do
-    grid
-    |> Enum.with_index(fn row, row_index ->
-      row
-      |> Enum.with_index(fn cell, col_index ->
-        if row_index == r && col_index == c do
-          value
-        else
-          cell
-        end
-      end)
-    end)
+    Map.put(grid, {r, c}, value)
   end
 
-  defp process_move({row, col}, grid, visited) do
+  defp process_move({row, col}, grid, visited, dimension) do
     current_value = get_value_from_2_by_2_matrix({row, col}, grid)
 
-    {proposed_row, proposed_col, proposed_value, is_escaped} = propose_move({row, col}, grid)
+    {proposed_row, proposed_col, proposed_value, is_escaped} =
+      propose_move({row, col}, grid, dimension)
 
     is_cycle = MapSet.member?(visited, {proposed_row, proposed_col, proposed_value})
 
@@ -79,7 +68,7 @@ defmodule Solution do
         |> replace_item(proposed_row, proposed_col, current_value)
       else
         grid
-        |> replace_item(row, col, rotate(current_value))
+        |> replace_item(row, col, Map.get(@rotation_map, current_value, current_value))
       end
 
     new_visited =
@@ -113,7 +102,7 @@ defmodule Solution do
           is_escaped,
           visited,
           _is_cycle
-        } = process_move(starting_position, grid, visited)
+        } = process_move(starting_position, grid, visited, input[:dimension])
 
         if is_escaped do
           {:halt, visited}
@@ -144,12 +133,7 @@ defmodule Solution do
       |> Enum.filter(fn p -> p != starting_position end)
 
     candidates
-    |> Enum.with_index()
-    |> Enum.filter(fn {{row, col}, index} ->
-      IO.puts(
-        "Progressing... #{index + 1} / #{length(candidates)} #{round(100 * (index + 1) / length(candidates))}%"
-      )
-
+    |> Enum.filter(fn {row, col} ->
       grid = replace_item(input[:grid], row, col, "#")
 
       visited =
@@ -166,7 +150,7 @@ defmodule Solution do
             is_escaped,
             new_visited,
             is_cycle
-          } = process_move(position, grid, visited)
+          } = process_move(position, grid, visited, input[:dimension])
 
           if is_escaped or is_cycle do
             if is_escaped do
