@@ -147,7 +147,7 @@ defmodule Solution do
     |> Enum.with_index()
     |> Enum.filter(fn {{row, col}, index} ->
       IO.puts(
-        "Progressing... #{index} / #{length(candidates)} #{round(100 * (index + 1) / length(candidates))}%"
+        "Progressing... #{index + 1} / #{length(candidates)} #{round(100 * (index + 1) / length(candidates))}%"
       )
 
       grid = replace_item(input[:grid], row, col, "#")
