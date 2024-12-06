@@ -68,6 +68,8 @@ defmodule Solution do
 
     {proposed_row, proposed_col, proposed_value, is_escaped} = propose_move({row, col}, grid)
 
+    is_cycle = MapSet.member?(visited, {proposed_row, proposed_col, proposed_value})
+
     accepted = proposed_value != "#"
 
     new_grid =
@@ -82,22 +84,23 @@ defmodule Solution do
 
     new_visited =
       if accepted and not is_escaped do
-        MapSet.put(visited, {proposed_row, proposed_col})
+        MapSet.put(visited, {proposed_row, proposed_col, current_value})
       else
         visited
       end
 
     if accepted do
-      {proposed_row, proposed_col, new_grid, is_escaped, new_visited}
+      {proposed_row, proposed_col, new_grid, is_escaped, new_visited, is_cycle}
     else
-      {row, col, new_grid, is_escaped, new_visited}
+      {row, col, new_grid, is_escaped, new_visited, is_cycle}
     end
   end
 
-  defp part_1(input) do
+  defp find_visited_tiles(input) do
     starting_position = input[:guard_starting_position]
+    {l, r} = starting_position
     grid = input[:grid]
-    visited = MapSet.new([starting_position])
+    visited = MapSet.new([{l, r, get_value_from_2_by_2_matrix(starting_position, grid)}])
 
     Enum.reduce_while(
       1..10000,
@@ -108,11 +111,12 @@ defmodule Solution do
           col,
           new_grid,
           is_escaped,
-          visited
+          visited,
+          _is_cycle
         } = process_move(starting_position, grid, visited)
 
         if is_escaped do
-          {:halt, MapSet.size(visited)}
+          {:halt, visited}
         else
           {:cont, {{row, col}, new_grid, visited}}
         end
@@ -120,15 +124,66 @@ defmodule Solution do
     )
   end
 
-  defp part_2(input) do
+  defp part_1(input) do
     input
+    |> find_visited_tiles()
+    |> MapSet.to_list()
+    |> Enum.map(fn {row, col, _} -> {row, col} end)
+    |> Enum.uniq()
+    |> Enum.count()
+  end
+
+  defp part_2(input) do
+    starting_position = input[:guard_starting_position]
+    {l, r} = starting_position
+
+    candidates =
+      input
+      |> find_visited_tiles()
+      |> Enum.map(fn {row, col, _} -> {row, col} end)
+      |> Enum.filter(fn p -> p != starting_position end)
+
+    candidates
+    |> Enum.filter(fn {row, col} ->
+      grid = replace_item(input[:grid], row, col, "#")
+
+      visited =
+        MapSet.new([{l, r, get_value_from_2_by_2_matrix(starting_position, grid)}])
+
+      Enum.reduce_while(
+        1..10000,
+        {starting_position, grid, visited},
+        fn _, {position, grid, visited} ->
+          {
+            row,
+            col,
+            new_grid,
+            is_escaped,
+            visited,
+            is_cycle
+          } = process_move(position, grid, visited)
+
+          if is_escaped or is_cycle do
+            if is_escaped do
+              {:halt, false}
+            else
+              {:halt, true}
+            end
+          else
+            {:cont, {{row, col}, new_grid, visited}}
+          end
+        end
+      )
+    end)
+    |> Enum.uniq()
+    |> Enum.count()
   end
 
   def main do
     data = read_input(2024, 06) |> parse_input()
 
     run_solution(1, &part_1/1, data)
-    # run_solution(2, &part_2/1, data)
+    run_solution(2, &part_2/1, data)
   end
 end
 
