@@ -3,7 +3,7 @@ defmodule Solution do
   import Common.Output
 
   @operations ["+", "*"]
-  @with_concatenation ["+", "*", "||"]
+  @with_concatenation @operations ++ ["||"]
 
   defp parse_input(input) do
     input
