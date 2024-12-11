@@ -19,26 +19,27 @@ defmodule Solution do
     end
   end
 
-  defp blink(line) do
-    line
-    |> Enum.map(&apply_rule/1)
-    |> List.flatten()
-  end
-
-  defp solve(input, n) do
-    Enum.reduce_while(1..n, input, fn ix, acc ->
-      IO.inspect(ix)
-      {:cont, blink(acc)}
+  defp solve(boxed_number, n) do
+    Enum.reduce(1..n, boxed_number, fn _, acc ->
+      List.flatten(Enum.map(acc, &apply_rule/1))
     end)
     |> Enum.count()
   end
 
   defp part_1(input) do
-    solve(input, 25)
+    input
+    |> Enum.map(fn number ->
+      solve([number], 25)
+    end)
+    |> Enum.sum()
   end
 
   defp part_2(input) do
-    solve(input, 75)
+    input
+    |> Enum.map(fn number ->
+      solve([number], 75)
+    end)
+    |> Enum.sum()
   end
 
   def main do
