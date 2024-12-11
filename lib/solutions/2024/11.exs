@@ -22,7 +22,7 @@ defmodule Solution do
   defp solve(occurrences, n) do
     Enum.reduce(1..n, occurrences, fn _, acc ->
       acc
-      |> Enum.map(fn {value, count} ->
+      |> Enum.flat_map(fn {value, count} ->
         new = apply_rule(value)
 
         if Enum.count(new) == 1 do
@@ -34,7 +34,6 @@ defmodule Solution do
           end)
         end
       end)
-      |> List.flatten()
       |> Enum.reduce(%{}, fn {value, count}, acc ->
         Map.update(acc, value, count, &(&1 + count))
       end)
