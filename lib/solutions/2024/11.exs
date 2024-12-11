@@ -1,6 +1,6 @@
 defmodule Solution do
-  import Common.Input
   import Common.Output
+  use Memoize
 
   defp split_number_in_half(number) do
     stringified = Integer.to_string(number)
@@ -13,33 +13,42 @@ defmodule Solution do
 
   defp apply_rule(number) do
     cond do
-      number == 0 -> 1
+      number == 0 -> [1]
       rem(length(Integer.digits(number)), 2) == 0 -> split_number_in_half(number)
-      true -> number * 2024
+      true -> [number * 2024]
     end
   end
 
-  defp solve(boxed_number, n) do
-    Enum.reduce(1..n, boxed_number, fn _, acc ->
-      List.flatten(Enum.map(acc, &apply_rule/1))
+  defp solve(occurrences, n) do
+    Enum.reduce(1..n, occurrences, fn _, acc ->
+      acc
+      |> Enum.map(fn {value, count} ->
+        new = apply_rule(value)
+
+        if Enum.count(new) == 1 do
+          [{Enum.at(new, 0), count}]
+        else
+          new
+          |> Enum.map(fn new_value ->
+            {new_value, count}
+          end)
+        end
+      end)
+      |> List.flatten()
+      |> Enum.reduce(%{}, fn {value, count}, acc ->
+        Map.update(acc, value, count, &(&1 + count))
+      end)
     end)
-    |> Enum.count()
+    |> Map.values()
+    |> Enum.sum()
   end
 
   defp part_1(input) do
-    input
-    |> Enum.map(fn number ->
-      solve([number], 25)
-    end)
-    |> Enum.sum()
+    solve(input, 25)
   end
 
   defp part_2(input) do
-    input
-    |> Enum.map(fn number ->
-      solve([number], 75)
-    end)
-    |> Enum.sum()
+    solve(input, 75)
   end
 
   def main do
@@ -47,7 +56,8 @@ defmodule Solution do
       "data/2024/11.txt"
       |> File.read!()
       |> String.split(" ")
-      |> Enum.map(&String.to_integer/1)
+      |> Enum.map(&{String.to_integer(&1), 1})
+      |> Map.new()
 
     run_solution(1, &part_1/1, data)
     run_solution(2, &part_2/1, data)
