@@ -3,6 +3,7 @@ defmodule Solution do
   import Common.Output
 
   @dimensions %{x: 101, y: 103}
+  @iters 100
 
   defp parse_input(input) do
     input
@@ -39,18 +40,21 @@ defmodule Solution do
   end
 
   defp assign_quadrant(position) do
+    x_threshold = (@dimensions[:x] - 1) / 2
+    y_threshold = (@dimensions[:y] - 1) / 2
+
     cond do
-      position.x == (@dimensions[:x] - 1) / 2 || position.y == (@dimensions[:y] - 1) / 2 -> nil
-      position.x < (@dimensions[:x] - 1) / 2 && position.y < (@dimensions[:y] - 1) / 2 -> 1
-      position.x > (@dimensions[:x] - 1) / 2 && position.y < (@dimensions[:y] - 1) / 2 -> 2
-      position.x < (@dimensions[:x] - 1) / 2 && position.y > (@dimensions[:y] - 1) / 2 -> 3
-      position.x > (@dimensions[:x] - 1) / 2 && position.y > (@dimensions[:y] - 1) / 2 -> 4
+      position.x == x_threshold || position.y == y_threshold -> nil
+      position.x < x_threshold && position.y < y_threshold -> 1
+      position.x > x_threshold && position.y < y_threshold -> 2
+      position.x < x_threshold && position.y > y_threshold -> 3
+      position.x > x_threshold && position.y > y_threshold -> 4
       true -> nil
     end
   end
 
   defp part_1(input) do
-    Enum.reduce_while(1..100, input, fn _, input ->
+    Enum.reduce_while(1..@iters, input, fn _, input ->
       {:cont, Enum.map(input, &apply_transition/1)}
     end)
     |> Enum.map(&assign_quadrant(&1.position))
@@ -81,7 +85,8 @@ defmodule Solution do
   end
 
   defp part_2(input) do
-    Enum.reduce_while(1..100_000, input, fn ix, input ->
+    ## IMPORTANT: This could run forever if there is never a tree found
+    Enum.reduce_while(Stream.iterate(1, &(&1 + 1)), input, fn ix, input ->
       state = Enum.map(input, &apply_transition/1)
 
       if has_tree?(state), do: {:halt, ix}, else: {:cont, state}
