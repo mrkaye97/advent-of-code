@@ -1,6 +1,7 @@
 defmodule Solution do
   import Common.Input
   import Common.Output
+  import Common.Misc
 
   defp parse_input(input) do
     input
@@ -8,91 +9,43 @@ defmodule Solution do
       dir = String.at(x, 0)
       num = String.to_integer(String.slice(x, 1..-1//1))
 
-      %{
-        "dir" => dir,
-        "num" => num
-      }
+      case dir do
+        "L" -> -1 * num
+        "R" -> num
+      end
     end)
   end
 
+  defp reposition_dial(dial, move) do
+    rem(100 + rem(dial + move, 100), 100)
+  end
+
+  defp compute_clicks(dial, move) do
+    new = dial + move
+
+    cond do
+      new == 0 and dial != 0 -> 1
+      new > 0 or (dial == 0 and new < 0) -> div(abs(new), 100)
+      new < 0 -> div(abs(new), 100) + 1
+    end
+  end
+
   defp part_1(input) do
-    result =
-      input
-      |> Enum.reduce({50, 0}, fn x, {dial, counter} ->
-        dir = x["dir"]
-        num = x["num"]
+    input
+    |> Enum.reduce([50, 0], fn move, [dial, counter] ->
+      dial = reposition_dial(dial, move)
 
-        curr =
-          case dir do
-            "L" ->
-              diff = dial - num
-
-              tmp =
-                case diff do
-                  x when x > 0 -> diff
-                  x when x < 0 -> 100 - abs(rem(dial - num, 100))
-                  _ -> 0
-                end
-
-              case tmp do
-                100 -> 0
-                _ -> tmp
-              end
-
-            "R" ->
-              rem(dial + num, 100)
-          end
-
-        flag =
-          case curr do
-            0 -> 1
-            _ -> 0
-          end
-
-        {curr, counter + flag}
-      end)
-
-    {_, x} = result
-
-    x
+      [dial, counter + boolean_to_integer(rem(dial, 100) == 0)]
+    end)
+    |> Enum.at(1)
   end
 
   defp part_2(input) do
-    result =
-      input
-      |> Enum.reduce({50, 0}, fn x, {pos, counter} ->
-        dir = x["dir"]
-        mag = x["num"]
-        new_pos = if dir == "L", do: pos - mag, else: pos + mag
-
-        {new_clicks, pos} =
-          cond do
-            (new_pos < 100 and dir == "R") or (new_pos > 0 and dir == "L") or
-                (new_pos == 0 and mag == 0) ->
-              {0, new_pos}
-
-            new_pos >= 100 ->
-              {div(new_pos, 100), rem(new_pos, 100)}
-
-            pos == 0 and new_pos < 0 ->
-              {div(abs(new_pos), 100), 100 - abs(rem(new_pos, 100))}
-
-            new_pos < 0 ->
-              {div(abs(new_pos), 100) + 1, rem(100 - abs(rem(new_pos, 100)), 100)}
-
-            new_pos == 0 and mag != 0 ->
-              {1, new_pos}
-
-            true ->
-              {0, 0}
-          end
-
-        {pos, counter + new_clicks}
-      end)
-
-    {_, x} = result
-
-    x
+    input
+    |> Enum.reduce([50, 0], fn move, [dial, counter] ->
+      [reposition_dial(dial, move), counter + compute_clicks(dial, move)]
+    end)
+    |> Enum.at(1)
   end
 
   def main do
