@@ -60,34 +60,34 @@ defmodule Solution do
   defp part_2(input) do
     result =
       input
-      |> Enum.reduce({50, 0}, fn x, {dial, counter} ->
+      |> Enum.reduce({50, 0}, fn x, {pos, counter} ->
         dir = x["dir"]
-        num = x["num"]
+        mag = x["num"]
+        new_pos = if dir == "L", do: pos - mag, else: pos + mag
 
-        {flag, dial} =
-          case dir do
-            "L" ->
-              diff = dial - num
+        {new_clicks, pos} =
+          cond do
+            (new_pos < 100 and dir == "R") or (new_pos > 0 and dir == "L") or
+                (new_pos == 0 and mag == 0) ->
+              {0, new_pos}
 
-              cond do
-                diff > 0 -> {0, diff}
-                dial == 0 and diff < 0 -> {div(abs(diff), 100), 100 - abs(rem(diff, 100))}
-                diff < 0 -> {div(abs(diff), 100) + 1, rem(100 - abs(rem(diff, 100)), 100)}
-                diff == 0 and num == 0 -> {0, dial}
-                diff == 0 and num != 0 -> {1, diff}
-                true -> {0, 0}
-              end
+            new_pos >= 100 ->
+              {div(new_pos, 100), rem(new_pos, 100)}
 
-            "R" ->
-              sum = dial + num
+            pos == 0 and new_pos < 0 ->
+              {div(abs(new_pos), 100), 100 - abs(rem(new_pos, 100))}
 
-              case sum do
-                x when x >= 100 -> {div(x, 100), rem(x, 100)}
-                x when x < 100 -> {0, x}
-              end
+            new_pos < 0 ->
+              {div(abs(new_pos), 100) + 1, rem(100 - abs(rem(new_pos, 100)), 100)}
+
+            new_pos == 0 and mag != 0 ->
+              {1, new_pos}
+
+            true ->
+              {0, 0}
           end
 
-        {dial, counter + flag}
+        {pos, counter + new_clicks}
       end)
 
     {_, x} = result
