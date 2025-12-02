@@ -31,8 +31,7 @@ defmodule Solution do
   end
 
   defp part_1(input) do
-    input
-    |> Enum.reduce([50, 0], fn move, [dial, counter] ->
+    Enum.reduce(input, [50, 0], fn move, [dial, counter] ->
       dial = reposition_dial(dial, move)
 
       [dial, counter + boolean_to_integer(rem(dial, 100) == 0)]
@@ -41,8 +40,7 @@ defmodule Solution do
   end
 
   defp part_2(input) do
-    input
-    |> Enum.reduce([50, 0], fn move, [dial, counter] ->
+    Enum.reduce(input, [50, 0], fn move, [dial, counter] ->
       [reposition_dial(dial, move), counter + compute_clicks(dial, move)]
     end)
     |> Enum.at(1)
