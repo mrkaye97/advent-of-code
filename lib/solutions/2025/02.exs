@@ -10,7 +10,7 @@ defmodule Solution do
     |> Enum.map(fn pair -> String.split(pair, "-") |> Enum.map(&String.to_integer/1) end)
   end
 
-  def split_every_n(string, n) do
+  defp split_every_n(string, n) do
     xs = String.graphemes(string)
     chunk_size = div(length(xs), n)
 
@@ -18,7 +18,7 @@ defmodule Solution do
     |> Enum.map(fn s -> Enum.join(s, "") end)
   end
 
-  def all_elements_same?(list) do
+  defp all_elements_same?(list) do
     case list do
       [] -> true
       _ -> Enum.count(Enum.uniq(list)) == 1
