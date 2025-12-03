@@ -1,16 +1,13 @@
 defmodule Solution do
   import Common.Input
   import Common.Output
+  import Common.Enum
 
   defp parse_input(input) do
     input
     |> Enum.map(fn ln ->
       ln |> String.graphemes() |> Enum.map(fn x -> String.to_integer(x) end)
     end)
-  end
-
-  defp argmax(xs) do
-    Enum.find_index(xs, fn x -> x == Enum.max(xs) end)
   end
 
   defp compute_joltage(input, n) do

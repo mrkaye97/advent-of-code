@@ -17,4 +17,8 @@ defmodule Common.Enum do
     |> List.replace_at(a, y)
     |> List.replace_at(b, x)
   end
+
+  def argmax(xs) do
+    Enum.find_index(xs, fn x -> x == Enum.max(xs) end)
+  end
 end
