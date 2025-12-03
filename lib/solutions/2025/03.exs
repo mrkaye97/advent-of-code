@@ -15,16 +15,15 @@ defmodule Solution do
 
   defp compute_joltage(input, n) do
     Enum.sum_by(input, fn bank ->
-      Enum.reduce(n..1//-1, ["", bank], fn ix, [acc, b] ->
+      Enum.reduce(n..1//-1, {"", bank}, fn ix, {acc, b} ->
         candidates = Enum.slice(b, 0..(length(b) - ix))
-        v = Enum.max(candidates)
-        i = argmax(candidates)
 
-        acc = acc <> Integer.to_string(v)
-
-        [acc, Enum.slice(b, (i + 1)..length(b))]
+        {
+          acc <> Integer.to_string(Enum.max(candidates)),
+          Enum.slice(b, (argmax(candidates) + 1)..length(b))
+        }
       end)
-      |> Enum.at(0)
+      |> elem(0)
       |> String.to_integer()
     end)
   end
