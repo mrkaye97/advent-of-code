@@ -41,8 +41,10 @@ defmodule Solution do
 
         num_adjacent_rolls < 4 && value == "@"
       end)
-      |> Enum.map(fn {value, col_index} -> {row_index, col_index} end)
+      |> Enum.map(fn {_, col_index} -> {row_index, col_index} end)
     end)
+    |> Enum.to_list()
+    |> MapSet.new()
   end
 
   defp remove_rolls(input, removables) do
@@ -53,7 +55,7 @@ defmodule Solution do
       |> Enum.with_index()
       |> Enum.map(fn {value, col_index} ->
         cond do
-          Enum.member?(removables, {row_index, col_index}) -> "."
+          MapSet.member?(removables, {row_index, col_index}) -> "."
           true -> value
         end
       end)
@@ -63,8 +65,7 @@ defmodule Solution do
   defp part_1(input) do
     input
     |> find_removables()
-    |> IO.inspect()
-    |> length()
+    |> MapSet.size()
   end
 
   defp part_2(input) do
@@ -72,10 +73,10 @@ defmodule Solution do
       removable = find_removables(grid)
       new = remove_rolls(grid, removable)
 
-      if length(removable) == 0 do
+      if MapSet.size(removable) == 0 do
         {:halt, {grid, count}}
       else
-        {:cont, {new, count + length(removable)}}
+        {:cont, {new, count + MapSet.size(removable)}}
       end
     end)
     |> elem(1)
