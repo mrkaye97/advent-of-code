@@ -43,20 +43,21 @@ defmodule Solution do
     end)
   end
 
+  defp get_grid_width(input) do
+    input
+    |> Enum.map(fn row ->
+      String.length(row)
+    end)
+    |> Enum.max()
+  end
+
   defp part_2(input) do
+    grid_width = get_grid_width(input)
     operations = Enum.at(input, -1) |> String.split()
 
-    operands = Enum.slice(input, 0..-2//1)
-
-    grid_width =
-      operands
-      |> Enum.map(fn row ->
-        String.length(row)
-      end)
-      |> Enum.max()
-
-    operands =
-      operands
+    padded_input =
+      input
+      |> Enum.slice(0..-2//1)
       |> Enum.map(fn row ->
         String.pad_trailing(row, grid_width)
       end)
@@ -64,31 +65,29 @@ defmodule Solution do
     column_breaks =
       0..grid_width
       |> Enum.filter(fn ix ->
-        Enum.all?(operands, fn op ->
+        Enum.all?(padded_input, fn op ->
           String.at(op, ix) == " "
         end)
       end)
 
-    operands =
-      operands
-      |> Enum.map(fn op ->
-        op
-        |> split_at_positions(column_breaks)
-        |> Enum.map(fn x -> String.replace(x, " ", "-") end)
-      end)
+    padded_input
+    |> Enum.map(fn op ->
+      op
+      |> split_at_positions(column_breaks)
+      |> Enum.map(fn x -> String.replace(x, " ", "-") end)
+    end)
+    |> transpose()
+    |> Enum.map(fn col ->
+      col
+      |> Enum.map(&String.graphemes/1)
       |> transpose()
       |> Enum.map(fn col ->
-        col
-        |> Enum.map(&String.graphemes/1)
-        |> transpose()
-        |> Enum.map(fn col ->
-          Enum.map(col, fn num -> String.replace(num, "-", "") end)
-          |> Enum.join()
-          |> String.to_integer()
-        end)
+        Enum.map(col, fn num -> String.replace(num, "-", "") end)
+        |> Enum.join()
+        |> String.to_integer()
       end)
-
-    compute(operands, operations)
+    end)
+    |> compute(operations)
   end
 
   def main do
