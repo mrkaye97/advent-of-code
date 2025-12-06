@@ -42,7 +42,9 @@ defmodule Solution do
   end
 
   defp do_ranges_overlap?([a_lo, a_hi], [b_lo, b_hi]) do
-    between?(a_lo, [b_lo, b_hi]) or between?(a_hi, [b_lo, b_hi]) or between?(b_lo, [a_lo, a_hi]) or
+    between?(a_lo, [b_lo, b_hi]) or
+      between?(a_hi, [b_lo, b_hi]) or
+      between?(b_lo, [a_lo, a_hi]) or
       between?(b_hi, [a_lo, a_hi])
   end
 
