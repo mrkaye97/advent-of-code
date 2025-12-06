@@ -1,82 +1,48 @@
 defmodule Solution do
   import Common.Input
   import Common.Output
+  import Common.Grid
 
   defp parse_input(input) do
     input
     |> Enum.map(&String.graphemes/1)
+    |> new()
   end
 
-  defp get_value(input, row, col) do
-    cond do
-      row < 0 or row >= length(input) ->
-        nil
+  defp is_removable(value, neighbors) do
+    num_adjacent_rolls = Enum.count(neighbors, fn {_, val} -> val == "@" end)
 
-      col < 0 or col >= length(Enum.at(input, row)) ->
-        nil
-
-      true ->
-        input
-        |> Enum.at(row)
-        |> Enum.at(col)
-    end
+    num_adjacent_rolls < 4 and value == "@"
   end
 
   defp find_removables(input) do
-    dirs = for x <- [-1, 0, 1], y <- [-1, 0, 1], do: {x, y}
-    dirs = Enum.reject(dirs, fn {x, y} -> x == 0 and y == 0 end)
-
     input
-    |> Enum.with_index()
-    |> Enum.flat_map(fn {row, row_index} ->
-      row
-      |> Enum.with_index()
-      |> Enum.filter(fn {value, col_index} ->
-        num_adjacent_rolls =
-          dirs
-          |> Enum.filter(fn {dx, dy} ->
-            get_value(input, row_index + dx, col_index + dy) == "@"
-          end)
-          |> length()
-
-        num_adjacent_rolls < 4 && value == "@"
-      end)
-      |> Enum.map(fn {_, col_index} -> {row_index, col_index} end)
+    |> Enum.filter(fn {coords, value} ->
+      is_removable(value, find_neighbors(input, coords))
     end)
-    |> Enum.to_list()
-    |> MapSet.new()
   end
 
   defp remove_rolls(input, removables) do
-    input
-    |> Enum.with_index()
-    |> Enum.map(fn {row, row_index} ->
-      row
-      |> Enum.with_index()
-      |> Enum.map(fn {value, col_index} ->
-        cond do
-          MapSet.member?(removables, {row_index, col_index}) -> "."
-          true -> value
-        end
-      end)
+    removables
+    |> Enum.reduce(input, fn {coords, _}, acc ->
+      set(acc, coords, ".")
     end)
   end
 
   defp part_1(input) do
     input
     |> find_removables()
-    |> MapSet.size()
+    |> length()
   end
 
   defp part_2(input) do
     Enum.reduce_while(1..100, {input, 0}, fn _, {grid, count} ->
       removable = find_removables(grid)
-      new = remove_rolls(grid, removable)
 
-      if MapSet.size(removable) == 0 do
+      if length(removable) == 0 do
         {:halt, {grid, count}}
       else
-        {:cont, {new, count + MapSet.size(removable)}}
+        {:cont, {remove_rolls(grid, removable), count + length(removable)}}
       end
     end)
     |> elem(1)
