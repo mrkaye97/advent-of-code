@@ -41,8 +41,9 @@ defmodule Solution do
     x >= lo and x <= hi
   end
 
-  defp do_ranges_overlap?([a_lo, a_hi], b) do
-    between?(a_lo, b) or between?(a_hi, b)
+  defp do_ranges_overlap?([a_lo, a_hi], [b_lo, b_hi]) do
+    between?(a_lo, [b_lo, b_hi]) or between?(a_hi, [b_lo, b_hi]) or between?(b_lo, [a_lo, a_hi]) or
+      between?(b_hi, [a_lo, a_hi])
   end
 
   defp merge_ranges(ranges) do
@@ -70,7 +71,6 @@ defmodule Solution do
       end
     end)
     |> Enum.sum_by(fn [lo, hi] ->
-      IO.puts("lo: #{lo}, hi: #{hi}")
       Enum.count(lo..hi)
     end)
   end
