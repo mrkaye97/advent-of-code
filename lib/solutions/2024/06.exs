@@ -1,58 +1,50 @@
 defmodule Solution do
   import Common.Input
   import Common.Output
-  import Common.Enum
+  alias Common.Grid
 
   @guard_symbols [">", "<", "^", "v"]
+  @symbol_to_dir %{
+    "^" => Grid.north(),
+    "v" => Grid.south(),
+    ">" => Grid.east(),
+    "<" => Grid.west()
+  }
   @rotation_map %{"^" => ">", ">" => "v", "v" => "<", "<" => "^"}
 
   defp parse_input(input) do
-    raw =
-      input
-      |> Enum.map(fn line ->
-        line |> String.split("") |> Enum.filter(fn cell -> cell != "" end)
-      end)
-
     grid =
-      raw
-      |> Enum.with_index()
-      |> Enum.reduce(%{}, fn {row, row_index}, acc ->
-        row
-        |> Enum.with_index()
-        |> Enum.reduce(acc, fn {cell, col_index}, inner_acc ->
-          Map.put(inner_acc, {row_index, col_index}, cell)
-        end)
-      end)
+      input
+      |> Enum.map(&String.graphemes/1)
+      |> Grid.new()
 
     guard_starting_position =
-      grid
-      |> Enum.find(fn {_key, val} -> Enum.member?(@guard_symbols, val) end)
-      |> elem(0)
+      @guard_symbols
+      |> Enum.map(fn sym ->
+        Grid.find(grid, sym)
+      end)
+      |> Enum.filter(& &1)
+      |> Enum.at(0)
 
     %{
       grid: grid,
       guard_starting_position: guard_starting_position,
-      dimension: length(raw)
+      dimension: length(input)
     }
   end
 
-  defp propose_move({row, col}, grid, dimension) do
-    current_value = Map.get(grid, {row, col}, ".")
+  defp propose_move(pos, grid, _) do
+    current_value = Grid.get(grid, pos, ".")
+    direction = Map.get(@symbol_to_dir, current_value)
 
-    case current_value do
-      ">" -> {row, col + 1, Map.get(grid, {row, col + 1}, "."), col == dimension - 1}
-      "<" -> {row, col - 1, Map.get(grid, {row, col - 1}, "."), col == 0}
-      "^" -> {row - 1, col, Map.get(grid, {row - 1, col}, "."), row == 0}
-      "v" -> {row + 1, col, Map.get(grid, {row + 1, col}, "."), row == dimension - 1}
-    end
-  end
+    next_pos = Grid.neighbor_pos(pos, direction)
+    next_value = Grid.get(grid, next_pos)
 
-  defp replace_item(grid, r, c, value) do
-    Map.put(grid, {r, c}, value)
+    {elem(next_pos, 0), elem(next_pos, 1), next_value, is_nil(next_value)}
   end
 
   defp process_move({row, col}, grid, visited, dimension) do
-    current_value = get_value_from_2_by_2_matrix({row, col}, grid)
+    current_value = Grid.get(grid, {row, col})
 
     {proposed_row, proposed_col, proposed_value, is_escaped} =
       propose_move({row, col}, grid, dimension)
@@ -64,11 +56,11 @@ defmodule Solution do
     new_grid =
       if accepted do
         grid
-        |> replace_item(row, col, ".")
-        |> replace_item(proposed_row, proposed_col, current_value)
+        |> Grid.set({row, col}, ".")
+        |> Grid.set({proposed_row, proposed_col}, current_value)
       else
         grid
-        |> replace_item(row, col, Map.get(@rotation_map, current_value, current_value))
+        |> Grid.set({row, col}, Map.get(@rotation_map, current_value, current_value))
       end
 
     new_visited =
@@ -87,9 +79,9 @@ defmodule Solution do
 
   defp find_visited_tiles(input) do
     starting_position = input[:guard_starting_position]
-    {l, r} = starting_position
+    {x, y} = starting_position
     grid = input[:grid]
-    visited = MapSet.new([{l, r, get_value_from_2_by_2_matrix(starting_position, grid)}])
+    visited = MapSet.new([{x, y, Grid.get(grid, starting_position)}])
 
     Enum.reduce_while(
       1..10000,
@@ -135,10 +127,10 @@ defmodule Solution do
     candidates
     |> Enum.map(fn {row, col} ->
       Task.async(fn ->
-        grid = replace_item(input[:grid], row, col, "#")
+        grid = Grid.set(input[:grid], {row, col}, "#")
 
         visited =
-          MapSet.new([{l, r, get_value_from_2_by_2_matrix(starting_position, grid)}])
+          MapSet.new([{l, r, Grid.get(grid, starting_position)}])
 
         Enum.reduce_while(
           1..15000,

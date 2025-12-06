@@ -1,4 +1,33 @@
 defmodule Common.Grid do
+  @east :E
+  @west :W
+  @north :N
+  @south :S
+  @northeast :NE
+  @northwest :NW
+  @southeast :SE
+  @southwest :SW
+
+  @dirs [
+    @north,
+    @south,
+    @east,
+    @west,
+    @northeast,
+    @northwest,
+    @southeast,
+    @southwest
+  ]
+
+  def north, do: @north
+  def south, do: @south
+  def east, do: @east
+  def west, do: @west
+  def northeast, do: @northeast
+  def northwest, do: @northwest
+  def southeast, do: @southeast
+  def southwest, do: @southwest
+
   def new(input) do
     input
     # reverse the rows so y=0 is at the bottom
@@ -25,20 +54,42 @@ defmodule Common.Grid do
     Map.delete(grid, {x, y})
   end
 
-  def find_neighbors(grid, {x, y}) do
-    dirs = %{
-      SW: {x - 1, y - 1},
-      W: {x - 1, y},
-      NW: {x - 1, y + 1},
-      S: {x, y - 1},
-      N: {x, y + 1},
-      SE: {x + 1, y - 1},
-      E: {x + 1, y},
-      NE: {x + 1, y + 1}
-    }
+  def find(grid, value) do
+    grid
+    |> Enum.filter(fn {_pos, cell_value} -> cell_value == value end)
+    |> Enum.map(fn {pos, _cell_value} -> pos end)
+    |> Enum.at(0)
+  end
 
-    dirs
-    |> Enum.map(fn {dir, coords} -> {dir, get(grid, coords)} end)
+  def neighbor_pos({x, y}, direction) do
+    case direction do
+      @north -> {x, y + 1}
+      @south -> {x, y - 1}
+      @east -> {x + 1, y}
+      @west -> {x - 1, y}
+      @northeast -> {x + 1, y + 1}
+      @northwest -> {x - 1, y + 1}
+      @southeast -> {x + 1, y - 1}
+      @southwest -> {x - 1, y - 1}
+    end
+  end
+
+  def find_neighbor(grid, {x, y}, direction) do
+    case direction do
+      @north -> get(grid, {x, y + 1})
+      @south -> get(grid, {x, y - 1})
+      @east -> get(grid, {x + 1, y})
+      @west -> get(grid, {x - 1, y})
+      @northeast -> get(grid, {x + 1, y + 1})
+      @northwest -> get(grid, {x - 1, y + 1})
+      @southeast -> get(grid, {x + 1, y - 1})
+      @southwest -> get(grid, {x - 1, y - 1})
+    end
+  end
+
+  def find_neighbors(grid, {x, y}) do
+    @dirs
+    |> Enum.map(fn dir -> {dir, find_neighbor(grid, {x, y}, dir)} end)
     |> Map.new()
   end
 end
