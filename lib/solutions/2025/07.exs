@@ -148,7 +148,7 @@ defmodule Solution do
 
         parent_row =
           row
-          |> Enum.flat_map(fn curr ->
+          |> Enum.reduce(MapSet.new(), fn curr, acc ->
             {_, depth} = curr
 
             tree
@@ -163,8 +163,8 @@ defmodule Solution do
               end
             end)
             |> Enum.filter(fn {_, y} -> y > depth end)
+            |> Enum.reduce(acc, fn parent, acc2 -> MapSet.put(acc2, parent) end)
           end)
-          |> Enum.uniq()
 
         {:cont, {updated_memo, parent_row}}
       end)
