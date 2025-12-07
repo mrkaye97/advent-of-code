@@ -167,6 +167,7 @@ defmodule Solution do
             end)
             |> Enum.filter(fn {_, y} -> y > depth end)
           end)
+          |> Enum.uniq()
 
         {:cont, {updated_memo, parent_row}}
       end)
