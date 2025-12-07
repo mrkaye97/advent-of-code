@@ -13,7 +13,7 @@ defmodule Solution do
     start = Grid.find(grid, "S")
     {_, height} = Grid.dim(grid)
 
-    Enum.reduce_while(0..height, {grid, [Grid.find(grid, "S"), 0]}, fn _, {g, row, count} ->
+    Enum.reduce_while(0..height, {grid, [Grid.find(grid, "S")], 0}, fn _, {g, row, count} ->
       candidates =
         Enum.map(row, fn coords ->
           pos = Grid.find_neighbor_pos(coords, Grid.south())
@@ -28,7 +28,7 @@ defmodule Solution do
         true ->
           {g, next, c} =
             candidates
-            |> Enum.reduce({g, [], count}, fn {coords, val}, {acc, next, c} ->
+            |> Enum.reduce({g, MapSet.new(), count}, fn {coords, val}, {acc, next, c} ->
               cond do
                 val == "^" ->
                   east_neighbor = Grid.find_neighbor_pos(coords, Grid.east())
@@ -36,21 +36,17 @@ defmodule Solution do
 
                   {acc
                    |> Grid.set(east_neighbor, "|")
+                   |> Grid.set(west_neighbor, "|"),
+                   next |> MapSet.put(east_neighbor) |> MapSet.put(west_neighbor), c + 1}
 
                 true ->
-                  {acc |> Grid.set(coords, "|"), [coords | next], c}
+                  {acc |> Grid.set(coords, "|"), MapSet.put(next, coords), c}
               end
             end)
 
           {:cont, {g, next, c}}
       end
-      |> IO.inspect()
     end)
-
-    # |> Grid.pretty_print()
-    # |> Enum.count(fn {coords, value} ->
-    #   value == "|"
-    # end)
   end
 
   defp part_2(input) do
