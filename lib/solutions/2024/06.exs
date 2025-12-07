@@ -37,7 +37,7 @@ defmodule Solution do
     current_value = Grid.get(grid, pos, ".")
     direction = Map.get(@symbol_to_dir, current_value)
 
-    next_pos = Grid.neighbor_pos(pos, direction)
+    next_pos = Grid.find_neighbor_pos(pos, direction)
     next_value = Grid.get(grid, next_pos)
 
     {elem(next_pos, 0), elem(next_pos, 1), next_value, is_nil(next_value)}

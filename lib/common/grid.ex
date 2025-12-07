@@ -72,7 +72,7 @@ defmodule Common.Grid do
     {Enum.max(x) + 1, Enum.max(y) + 1}
   end
 
-  def neighbor_pos({x, y}, direction) do
+  def find_neighbor_pos({x, y}, direction) do
     case direction do
       @north -> {x, y + 1}
       @south -> {x, y - 1}
@@ -102,5 +102,20 @@ defmodule Common.Grid do
     @dirs
     |> Enum.map(fn dir -> {dir, find_neighbor(grid, {x, y}, dir)} end)
     |> Map.new()
+  end
+
+  def pretty_print(grid) do
+    {max_x, max_y} = dim(grid)
+
+    for y <- (max_y - 1)..0//-1 do
+      for x <- 0..(max_x - 1) do
+        get(grid, {x, y}, " ")
+      end
+      |> Enum.join()
+    end
+    |> Enum.join("\n")
+    |> IO.puts()
+
+    grid
   end
 end

@@ -52,7 +52,7 @@ defmodule Solution do
   defp move(grid, {x, y}) do
     {d1, d2} = Map.get(@char_to_dirs, Grid.get(grid, {x, y}))
 
-    Enum.map([d1, d2], fn d -> Grid.neighbor_pos({x, y}, d) end)
+    Enum.map([d1, d2], fn d -> Grid.find_neighbor_pos({x, y}, d) end)
   end
 
   defp dfs(grid, {x, y}, visited) do
@@ -83,7 +83,7 @@ defmodule Solution do
   end
 
   defp traverse_to_edge(grid, coords, dir, cycle_nodes, count, has_seen_empty, has_seen_cycle) do
-    next_ix = Grid.neighbor_pos(coords, dir)
+    next_ix = Grid.find_neighbor_pos(coords, dir)
     next = Grid.get(grid, next_ix)
     is_cycle_node = MapSet.member?(cycle_nodes, coords)
     count = count + Misc.boolean_to_integer(is_cycle_node)
