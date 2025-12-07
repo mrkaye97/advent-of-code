@@ -10,7 +10,6 @@ defmodule Solution do
   end
 
   defp part_1(grid) do
-    start = Grid.find(grid, "S")
     {_, height} = Grid.dim(grid)
 
     Enum.reduce_while(0..height, {grid, [Grid.find(grid, "S")], 0}, fn _, {g, row, count} ->
@@ -112,10 +111,8 @@ defmodule Solution do
     {leaves, tree} = build_tree(grid)
     start = Grid.find(grid, "S")
 
-    {m, r} =
-      Enum.reduce_while(0..height, {Map.new(), leaves}, fn ix, {memo, row} ->
-        IO.puts("processing depth #{ix}")
-
+    {m, _} =
+      Enum.reduce_while(0..height, {Map.new(), leaves}, fn _, {memo, row} ->
         updated_memo =
           row
           |> Enum.reduce(memo, fn curr, memo ->
