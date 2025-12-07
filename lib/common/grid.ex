@@ -61,6 +61,17 @@ defmodule Common.Grid do
     |> Enum.at(0)
   end
 
+  def dim(grid) do
+    {x, y} =
+      grid
+      |> Enum.map(fn {coords, _} ->
+        coords
+      end)
+      |> Enum.unzip()
+
+    {Enum.max(x) + 1, Enum.max(y) + 1}
+  end
+
   def neighbor_pos({x, y}, direction) do
     case direction do
       @north -> {x, y + 1}
