@@ -49,7 +49,7 @@ defmodule Solution do
     end)
   end
 
-  defp part_2(grid) do
+  defp build_tree(grid) do
     {_, height} = Grid.dim(grid)
     tree = Graph.new()
 
@@ -67,9 +67,7 @@ defmodule Solution do
       cond do
         not Enum.any?(Enum.map(candidates, fn {_, v} -> v end)) ->
           {:halt,
-           {count,
-            Enum.map(candidates, fn {pos, _} -> Grid.find_neighbor_pos(pos, Grid.north()) end)},
-           t}
+           {Enum.map(candidates, fn {pos, _} -> Grid.find_neighbor_pos(pos, Grid.north()) end), t}}
 
         true ->
           {g, next, c, t} =
@@ -85,8 +83,14 @@ defmodule Solution do
                    |> Grid.set(west_neighbor, "|"),
                    next |> MapSet.put(east_neighbor) |> MapSet.put(west_neighbor), c + 1,
                    t
-                   |> Graph.add_edge(Grid.find_neighbor_pos(coords, Grid.north()), east_neighbor)
-                   |> Graph.add_edge(Grid.find_neighbor_pos(coords, Grid.north()), west_neighbor)}
+                   |> Graph.add_edge(
+                     Grid.find_neighbor_pos(coords, Grid.north()),
+                     east_neighbor
+                   )
+                   |> Graph.add_edge(
+                     Grid.find_neighbor_pos(coords, Grid.north()),
+                     west_neighbor
+                   )}
 
                 true ->
                   {acc |> Grid.set(coords, "|"), MapSet.put(next, coords), c,
@@ -97,8 +101,18 @@ defmodule Solution do
           {:cont, {g, next, c, t}}
       end
     end)
-    |> IO.inspect()
-    |> elem(0)
+  end
+
+  defp part_2(grid) do
+    {_, height} = Grid.dim(grid)
+    {leaves, tree} = build_tree(grid)
+    start = Grid.find(grid, "S")
+
+    ## todo: do this with DP, iterating from the bottom up and caching
+    ## paths along the way
+    Enum.sum_by(leaves, fn leaf ->
+      tree |> Graph.get_paths(start, leaf) |> Enum.count()
+    end)
   end
 
   def main do
