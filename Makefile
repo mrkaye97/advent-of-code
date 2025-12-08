@@ -21,7 +21,7 @@ new: check-variables
 
 # Run the solution
 run: check-variables
-	@$(MIX) run lib/solutions/$(YEAR)/$(shell printf "%02d" $(DAY)).exs
+	@$(MIX) run lib/solutions/$(YEAR)/$(DAY).exs
 
 # Format the codebase
 fmt:
