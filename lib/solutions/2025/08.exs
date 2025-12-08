@@ -59,7 +59,7 @@ defmodule Solution do
         graph
 
       true ->
-        {{v1, v2}, distance} = Enum.at(distances, 0)
+        {{v1, v2}, _} = Enum.at(distances, 0)
         remaining = Enum.slice(distances, 1..-1//1)
         add_edges(Graph.add_edge(graph, v1, v2), remaining, n)
     end
@@ -71,7 +71,7 @@ defmodule Solution do
         last_nodes
 
       true ->
-        {{v1, v2}, distance} = Enum.at(distances, 0)
+        {{v1, v2}, _} = Enum.at(distances, 0)
         remaining = Enum.slice(distances, 1..-1//1)
         add_edges_2(Graph.add_edge(graph, v1, v2), remaining, [v1, v2])
     end
