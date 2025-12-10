@@ -39,24 +39,23 @@ defmodule Solution do
     IO.inspect({min_x, max_x, min_y, max_y}, label: "Bounds")
 
     Enum.reduce(input, 0, fn {x1, y1}, acc ->
-      IO.puts("Progress: (#{x1}, #{y1}) out of (#{max_x}, #{max_y})")
+      IO.puts("Progress: (#{x1}, #{y1}) out of (#{max_x}, #{max_y}) ")
 
       Enum.reduce(input, acc, fn {x2, y2}, acc ->
         cond do
           x1 < x2 ->
-            corners = [{x1, y1}, {x2, y1}, {x2, y2}, {x1, y2}]
-
-            all_corners_in_or_on_polygon =
-              Enum.map(corners, fn {x, y} ->
-                pt = %Geo.Point{coordinates: {x, y}}
-
-                Topo.contains?(polygon, pt) or Topo.intersects?(polygon, pt)
-              end)
-              |> Enum.all?()
-
             cond do
-              all_corners_in_or_on_polygon -> max((abs(x2 - x1) + 1) * (abs(y2 - y1) + 1), acc)
-              true -> acc
+              Enum.all?(
+                Enum.map([{x1, y1}, {x2, y1}, {x2, y2}, {x1, y2}], fn {x, y} ->
+                  pt = %Geo.Point{coordinates: {x, y}}
+
+                  Topo.contains?(polygon, pt) or Topo.intersects?(polygon, pt)
+                end)
+              ) ->
+                max((abs(x2 - x1) + 1) * (abs(y2 - y1) + 1), acc)
+
+              true ->
+                acc
             end
 
           true ->
