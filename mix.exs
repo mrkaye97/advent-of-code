@@ -22,6 +22,7 @@ defmodule AdventOfCode.MixProject do
   defp deps do
     [
       {:libgraph, "~> 0.16.0"},
+      {:topo, "~> 1.0.3"},
       {:memoize, "~> 1.4"},
       {:nx, "~> 0.9.2"}
       # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
