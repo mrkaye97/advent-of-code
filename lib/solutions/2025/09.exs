@@ -1,7 +1,6 @@
 defmodule Solution do
   import Common.Input
   import Common.Output
-  alias Common.Grid
 
   defp parse_input(input) do
     input
@@ -20,57 +19,28 @@ defmodule Solution do
     end)
   end
 
-  defp find_nearest({x, y}, lookup_table) do
-    {x_to_ys, y_to_xs} = lookup_table
-
-    nearest_y =
-      x_to_ys |> Map.get(x) |> Enum.filter(fn y2 -> y2 != y end) |> Enum.sort() |> Enum.at(0)
-
-    nearest_x =
-      y_to_xs |> Map.get(y) |> Enum.filter(fn x2 -> x2 != x end) |> Enum.sort() |> Enum.at(0)
-
-    {{nearest_x, y}, {x, nearest_y}}
-  end
-
-  defp expand_range({x1, y1}, {x2, y2}) do
-    cond do
-      x1 == x2 and y1 == y2 -> []
-      x1 != x2 and y1 != y2 -> []
-      x1 < x2 -> Enum.map(1..(x2 - x1 - 1), fn ix -> {x1 + ix, y1} end)
-      x1 > x2 -> Enum.map(1..(x1 - x2 - 1), fn ix -> {x2 + ix, y1} end)
-      y1 < y2 -> Enum.map(1..(y2 - y1 - 1), fn ix -> {x1, y1 + ix} end)
-      y1 > y2 -> Enum.map(1..(y1 - y2 - 1), fn ix -> {x1, y2 + ix} end)
-    end
-  end
-
-  defp is_trapped_in_dir(grid, coords, dir) do
-    IO.inspect({coords, dir})
-
-    Enum.reduce_while(0..500, {coords, 0}, fn _, {c, ct} ->
-      # neighbor = Grid.find_neighbor_pos(c, dir)
-      # neighbor_value = Grid.get(grid, neighbor)
-
-      # cond do
-      #   is_nil(neighbor_value) -> rem(ct, 2) == 0
-      # end
-
-      {:halt, false}
-    end)
-  end
-
-  defp is_trapped(grid, coords) do
-    Enum.all?(
-      [Grid.south(), Grid.north(), Grid.east(), Grid.west()]
-      |> Enum.map(fn dir ->
-        is_trapped_in_dir(grid, coords, dir)
-      end)
-    )
-  end
-
   defp part_2(input) do
-    polygon = %Geo.Polygon{coordinates: [input]} |> IO.inspect()
+    polygon = %Geo.Polygon{coordinates: [input]}
+
+    input =
+      Enum.sort(input, fn {x1, y1}, {x2, y2} ->
+        cond do
+          x1 < x2 -> true
+          x1 == x2 and y1 < y2 -> true
+          true -> false
+        end
+      end)
+
+    min_x = input |> Enum.map(fn {x, _} -> x end) |> Enum.min()
+    max_x = input |> Enum.map(fn {x, _} -> x end) |> Enum.max()
+    min_y = input |> Enum.map(fn {_, y} -> y end) |> Enum.min()
+    max_y = input |> Enum.map(fn {_, y} -> y end) |> Enum.max()
+
+    IO.inspect({min_x, max_x, min_y, max_y}, label: "Bounds")
 
     Enum.reduce(input, 0, fn {x1, y1}, acc ->
+      IO.puts("Progress: (#{x1}, #{y1}) out of (#{max_x}, #{max_y})")
+
       Enum.reduce(input, acc, fn {x2, y2}, acc ->
         cond do
           x1 < x2 ->
