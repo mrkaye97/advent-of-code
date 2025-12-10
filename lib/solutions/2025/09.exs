@@ -31,12 +31,8 @@ defmodule Solution do
         end
       end)
 
-    min_x = input |> Enum.map(fn {x, _} -> x end) |> Enum.min()
     max_x = input |> Enum.map(fn {x, _} -> x end) |> Enum.max()
-    min_y = input |> Enum.map(fn {_, y} -> y end) |> Enum.min()
     max_y = input |> Enum.map(fn {_, y} -> y end) |> Enum.max()
-
-    IO.inspect({min_x, max_x, min_y, max_y}, label: "Bounds")
 
     Enum.reduce(input, 0, fn {x1, y1}, acc ->
       IO.puts("Progress: (#{x1}, #{y1}) out of (#{max_x}, #{max_y}) ")
