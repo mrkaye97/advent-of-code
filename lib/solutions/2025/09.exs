@@ -22,12 +22,7 @@ defmodule Solution do
   defp part_2(input) do
     polygon = %Geo.Polygon{coordinates: [input]}
 
-    max_x = input |> Enum.map(fn {x, _} -> x end) |> Enum.max()
-    max_y = input |> Enum.map(fn {_, y} -> y end) |> Enum.max()
-
     Enum.reduce(input, 0, fn {x1, y1}, acc ->
-      IO.puts("Progress: (#{x1}, #{y1}) out of (#{max_x}, #{max_y}) ")
-
       Enum.reduce(input, acc, fn {x2, y2}, acc ->
         cond do
           x1 < x2 ->
