@@ -20,16 +20,8 @@ defmodule Solution do
   end
 
   defp part_2(input) do
+    IO.inspect(input)
     polygon = %Geo.Polygon{coordinates: [input]}
-
-    input =
-      Enum.sort(input, fn {x1, y1}, {x2, y2} ->
-        cond do
-          x1 < x2 -> true
-          x1 == x2 and y1 < y2 -> true
-          true -> false
-        end
-      end)
 
     max_x = input |> Enum.map(fn {x, _} -> x end) |> Enum.max()
     max_y = input |> Enum.map(fn {_, y} -> y end) |> Enum.max()
@@ -41,13 +33,27 @@ defmodule Solution do
         cond do
           x1 < x2 ->
             cond do
-              Enum.all?(
-                Enum.map([{x1, y1}, {x2, y1}, {x2, y2}, {x1, y2}], fn {x, y} ->
-                  pt = %Geo.Point{coordinates: {x, y}}
+              Topo.contains?(polygon, %Geo.Polygon{
+                coordinates: [
+                  cond do
+                    y1 < y2 ->
+                      [
+                        {x1 + 0.5, y1 + 0.5},
+                        {x2 - 0.5, y1 + 0.5},
+                        {x2 - 0.5, y2 - 0.5},
+                        {x1 + 0.5, y2 - 0.5}
+                      ]
 
-                  Topo.contains?(polygon, pt) or Topo.intersects?(polygon, pt)
-                end)
-              ) ->
+                    true ->
+                      [
+                        {x1 + 0.5, y1 - 0.5},
+                        {x2 - 0.5, y1 - 0.5},
+                        {x2 - 0.5, y2 + 0.5},
+                        {x1 + 0.5, y2 + 0.5}
+                      ]
+                  end
+                ]
+              }) ->
                 max((abs(x2 - x1) + 1) * (abs(y2 - y1) + 1), acc)
 
               true ->
