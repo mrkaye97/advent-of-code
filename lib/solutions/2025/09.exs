@@ -19,6 +19,34 @@ defmodule Solution do
     end)
   end
 
+  defp create_slightly_shrunken_inner_polygon({x1, y1}, {x2, y2}) do
+    ## super jank way to do polygon-in-polygon that avoids edge cases caused by
+    ## the shared edges - just shrinking the "candidate" polygon to check if it's
+    ## contained in the outer one.
+    coords =
+      cond do
+        y1 < y2 ->
+          [
+            {x1 + 0.5, y1 + 0.5},
+            {x2 - 0.5, y1 + 0.5},
+            {x2 - 0.5, y2 - 0.5},
+            {x1 + 0.5, y2 - 0.5}
+          ]
+
+        true ->
+          [
+            {x1 + 0.5, y1 - 0.5},
+            {x2 - 0.5, y1 - 0.5},
+            {x2 - 0.5, y2 + 0.5},
+            {x1 + 0.5, y2 + 0.5}
+          ]
+      end
+
+    %Geo.Polygon{
+      coordinates: [coords]
+    }
+  end
+
   defp part_2(input) do
     polygon = %Geo.Polygon{coordinates: [input]}
 
@@ -27,27 +55,7 @@ defmodule Solution do
         cond do
           x1 < x2 ->
             cond do
-              Topo.contains?(polygon, %Geo.Polygon{
-                coordinates: [
-                  cond do
-                    y1 < y2 ->
-                      [
-                        {x1 + 0.5, y1 + 0.5},
-                        {x2 - 0.5, y1 + 0.5},
-                        {x2 - 0.5, y2 - 0.5},
-                        {x1 + 0.5, y2 - 0.5}
-                      ]
-
-                    true ->
-                      [
-                        {x1 + 0.5, y1 - 0.5},
-                        {x2 - 0.5, y1 - 0.5},
-                        {x2 - 0.5, y2 + 0.5},
-                        {x1 + 0.5, y2 + 0.5}
-                      ]
-                  end
-                ]
-              }) ->
+              Topo.contains?(polygon, create_slightly_shrunken_inner_polygon({x1, y1}, {x2, y2})) ->
                 max((abs(x2 - x1) + 1) * (abs(y2 - y1) + 1), acc)
 
               true ->
