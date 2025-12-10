@@ -20,7 +20,6 @@ defmodule Solution do
   end
 
   defp part_2(input) do
-    IO.inspect(input)
     polygon = %Geo.Polygon{coordinates: [input]}
 
     max_x = input |> Enum.map(fn {x, _} -> x end) |> Enum.max()
