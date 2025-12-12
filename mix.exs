@@ -25,7 +25,6 @@ defmodule AdventOfCode.MixProject do
       {:topo, "~> 1.0.3"},
       {:memoize, "~> 1.4"},
       {:nx, "~> 0.9.2"}
-      # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
     ]
   end
 end
