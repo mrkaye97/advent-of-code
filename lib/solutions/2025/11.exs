@@ -1,7 +1,6 @@
 defmodule Solution do
   import Common.Input
   import Common.Output
-  use Memoize
 
   defp parse_input(input) do
     input
@@ -9,41 +8,7 @@ defmodule Solution do
     |> Enum.map(fn [k, vs] -> {k, String.split(vs, " ")} end)
   end
 
-  defp part_1(input) do
-    input
-    |> Enum.reduce(Graph.new(), fn {k, vs}, g ->
-      Enum.reduce(vs, g, fn v, g ->
-        g
-        |> Graph.add_vertex(v)
-        |> Graph.add_edge(k, v)
-      end)
-    end)
-    |> Graph.Pathfinding.all("you", "out")
-    |> length()
-  end
-
-  defp compute(graph, curr, visited_dac, visited_fft, cache) do
-    cond do
-      curr == "out" ->
-        if visited_dac and visited_fft, do: 1, else: 0
-
-      true ->
-        graph
-        |> Map.get(curr, [])
-        |> Enum.reduce(0, fn child, total ->
-          total +
-            dfs(
-              graph,
-              child,
-              visited_dac or child == "dac",
-              visited_fft or child == "fft",
-              cache
-            )
-        end)
-    end
-  end
-
-  defp dfs(graph, curr, visited_dac, visited_fft, cache) do
+  defp dfs(graph, curr, visited_dac, visited_fft, cache, part) do
     key = {curr, visited_dac, visited_fft}
     cached_value = Agent.get(cache, &Map.get(&1, key))
 
@@ -52,7 +17,26 @@ defmodule Solution do
         cached_value
 
       true ->
-        result = compute(graph, curr, visited_dac, visited_fft, cache)
+        result =
+          cond do
+            curr == "out" ->
+              if visited_dac and visited_fft, do: 1, else: 0
+
+            true ->
+              graph
+              |> Map.get(curr, [])
+              |> Enum.reduce(0, fn child, total ->
+                total +
+                  dfs(
+                    graph,
+                    child,
+                    part == 1 or visited_dac or child == "dac",
+                    part == 1 or visited_fft or child == "fft",
+                    cache,
+                    part
+                  )
+              end)
+          end
 
         Agent.update(cache, &Map.put(&1, key, result))
 
@@ -60,29 +44,27 @@ defmodule Solution do
     end
   end
 
-  defp part_2(input) do
+  defp solve(input, part, start) do
     graph =
       input
-      |> Enum.reduce(Graph.new(), fn {k, vs}, g ->
+      |> Enum.reduce(Map.new(), fn {k, vs}, g ->
         Enum.reduce(vs, g, fn v, g ->
-          g
-          |> Graph.add_vertex(v)
-          |> Graph.add_edge(k, v)
+          Map.put(g, k, [v | Map.get(g, k, [])])
         end)
-      end)
-      |> Graph.edges()
-      |> Enum.reduce(Map.new(), fn e, acc ->
-        from = e.v1
-        to = e.v2
-        existing = Map.get(acc, from, [])
-
-        Map.put(acc, from, [to | existing])
       end)
 
     {:ok, cache} = Agent.start_link(fn -> %{} end)
-    result = dfs(graph, "svr", false, false, cache)
+    result = dfs(graph, start, false, false, cache, part)
     Agent.stop(cache)
     result
+  end
+
+  defp part_1(input) do
+    solve(input, 1, "you")
+  end
+
+  defp part_2(input) do
+    solve(input, 2, "svr")
   end
 
   def main do
