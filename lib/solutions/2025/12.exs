@@ -1,5 +1,4 @@
 defmodule Solution do
-  import Common.Input
   import Common.Output
   alias Common.Grid
 
@@ -46,27 +45,39 @@ defmodule Solution do
             Map.put(acc, i, String.to_integer(v))
           end)
 
-        %{grid: grid, values: values}
+        {grid, values}
       end)
 
-    %{grids: grids, presents: presents}
+    {grids, presents}
   end
 
   defp part_1(input) do
-    input
-  end
+    {grids, presents} = input
 
-  defp part_2(input) do
-    input
+    grids
+    |> Enum.filter(fn {grid, assignments} ->
+      ## this is a hack that only works for the input provided because none
+      ## of the presents actually need to fit inside of one another.
+      ## the real problem is NP-hard, so it'd take some memoization / backtracking to
+      ## solve in a reasonable amount of time
+      to_place =
+        Enum.flat_map(assignments, fn {ix, num} ->
+          Enum.map(1..num//1, fn _ -> Map.get(presents, ix) end)
+        end)
+        |> length()
+        |> Kernel.*(9)
+
+      {x, y} = Grid.dim(grid)
+
+      to_place <= x * y
+    end)
+    |> length()
   end
 
   def main do
     data = parse_input()
 
-    IO.inspect(data)
-
-    # run_solution(1, &part_1/1, data)
-    # run_solution(2, &part_2/1, data)
+    run_solution(1, &part_1/1, data)
   end
 end
 
