@@ -22,34 +22,41 @@ defmodule Solution do
     |> length()
   end
 
+  defp compute(graph, curr, visited_dac, visited_fft, cache) do
+    cond do
+      curr == "out" ->
+        if visited_dac and visited_fft, do: 1, else: 0
+
+      true ->
+        graph
+        |> Map.get(curr, [])
+        |> Enum.reduce(0, fn child, total ->
+          total +
+            dfs(
+              graph,
+              child,
+              visited_dac or child == "dac",
+              visited_fft or child == "fft",
+              cache
+            )
+        end)
+    end
+  end
+
   defp dfs(graph, curr, visited_dac, visited_fft, cache) do
     key = {curr, visited_dac, visited_fft}
+    cached_value = Agent.get(cache, &Map.get(&1, key))
 
-    case Agent.get(cache, &Map.get(&1, key)) do
-      nil ->
-        result =
-          if curr == "out" do
-            if visited_dac and visited_fft, do: 1, else: 0
-          else
-            graph
-            |> Map.get(curr, [])
-            |> Enum.reduce(0, fn child, total ->
-              total +
-                dfs(
-                  graph,
-                  child,
-                  visited_dac or child == "dac",
-                  visited_fft or child == "fft",
-                  cache
-                )
-            end)
-          end
+    cond do
+      cached_value != nil ->
+        cached_value
+
+      true ->
+        result = compute(graph, curr, visited_dac, visited_fft, cache)
 
         Agent.update(cache, &Map.put(&1, key, result))
-        result
 
-      cached ->
-        cached
+        result
     end
   end
 
